@@ -6,8 +6,8 @@
 <link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
 <title>Suivi</title>
 <style>
-:root{--bg:#f2f5f6;--sf:#fff;--ink:#14252b;--mut:#5b6b70;--ac:#0f7b6c;--ln:#d5dde0;--bad:#b3261e;--c1:#0f7b6c;--c2:#c2410c;--rg:rgba(214,60,110,.2);--ev:#5561c9;color-scheme:light dark}
-@media(prefers-color-scheme:dark){:root{--bg:#0e1a1e;--sf:#16272d;--ink:#e8eff1;--mut:#93a5ab;--ac:#3fc3ae;--ln:#2a3d44;--bad:#ff8a80;--c1:#3fc3ae;--c2:#ff9e64;--rg:rgba(255,120,160,.25);--ev:#9aa5ff}}
+:root{--bg:#f2f5f6;--sf:#fff;--ink:#14252b;--mut:#5b6b70;--ac:#0f7b6c;--ln:#d5dde0;--bad:#b3261e;--c1:#0f7b6c;--c2:#c2410c;--rg:rgba(214,60,110,.2);--ev:#5561c9;--vl:#7b3fb5;color-scheme:light dark}
+@media(prefers-color-scheme:dark){:root{--bg:#0e1a1e;--sf:#16272d;--ink:#e8eff1;--mut:#93a5ab;--ac:#3fc3ae;--ln:#2a3d44;--bad:#ff8a80;--c1:#3fc3ae;--c2:#ff9e64;--rg:rgba(255,120,160,.25);--ev:#9aa5ff;--vl:#c9a0ff}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,sans-serif;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
 header{position:sticky;top:0;z-index:5;display:flex;gap:8px;align-items:center;padding:10px 14px;background:var(--bg)}
@@ -42,7 +42,7 @@ tbody tr[data-id]{cursor:pointer}
 #tbl td:first-child{white-space:nowrap}
 .tag{display:inline-block;padding:1px 8px;border-radius:99px;font-size:12px;white-space:nowrap;border:1px solid var(--ln)}
 .tag.conscient{border-color:var(--c1);color:var(--c1)}.tag.inconscient{border-color:var(--c2);color:var(--c2)}
-.tag.rg{border-color:#d63c6e;color:#d63c6e}.tag.ev{border-color:var(--ev);color:var(--ev)}
+.tag.rg{border-color:#d63c6e;color:#d63c6e}.tag.ev{border-color:var(--ev);color:var(--ev)}.tag.vl{border-color:var(--vl);color:var(--vl)}
 .card{background:var(--sf);border:1px solid var(--ln);border-radius:12px;padding:12px;margin-bottom:14px}
 .card .tw{border-radius:8px}
 .hint{color:var(--mut);font-size:13px;margin:8px 0 0}
@@ -50,10 +50,10 @@ tbody tr[data-id]{cursor:pointer}
 .warn.bad{border-color:var(--bad)}
 .lg{display:flex;flex-wrap:wrap;gap:12px;font-size:13px;color:var(--mut);margin:6px 0 12px}
 .sw{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
-.sw.c1{background:var(--c1)}.sw.c2{background:var(--c2)}.sw.rg{background:var(--rg)}.sw.ev{background:var(--ev)}
+.sw.c1{background:var(--c1)}.sw.c2{background:var(--c2)}.sw.rg{background:var(--rg)}.sw.ev{background:var(--ev)}.sw.vl{background:var(--vl)}
 .cw{overflow-x:auto}
 svg{display:block;font-family:inherit}
-svg .c1{fill:var(--c1)}svg .c2{fill:var(--c2)}svg .rg{fill:var(--rg)}svg .ev{fill:var(--ev)}
+svg .c1{fill:var(--c1)}svg .c2{fill:var(--c2)}svg .rg{fill:var(--rg)}svg .ev{fill:var(--ev)}svg .vl{fill:var(--vl)}
 svg .pt{stroke:var(--sf);stroke-width:1.5}
 svg .ln1,svg .ln2{fill:none;stroke-width:2}svg .ln1{stroke:var(--c1)}svg .ln2{stroke:var(--c2)}
 svg .ax{stroke:var(--ln);stroke-width:1}svg .td{stroke:var(--mut);stroke-dasharray:3 3}
@@ -64,7 +64,7 @@ svg .tx{fill:var(--mut);font-size:11px}svg .sm{font-size:10px}
 <nav id="tabs"><button data-t="data" class="on">Données</button><button data-t="stats">Statistiques</button><button data-t="graph">Graphiques</button></nav>
 <main>
 <section id="v-data">
- <div class="adds"><button class="pri" id="a-mal">+ Malaise</button><button id="a-evt">+ Évènement</button><button id="a-reg">+ Règles</button></div>
+ <div class="adds"><button class="pri" id="a-mal">+ Malaise</button><button id="a-val">+ Valium</button><button id="a-evt">+ Évènement</button><button id="a-reg">+ Règles</button></div>
  <div id="notes"></div>
  <div id="flt" class="chips"></div>
  <div class="tw"><table id="tbl"><thead><tr><th>Date</th><th>Type</th><th>Détails</th><th>Cycle</th></tr></thead><tbody id="tbody"></tbody></table></div>
@@ -92,15 +92,16 @@ const SIGNS={
  conscient:['Bouche sèche','Distorsion visuelle','Vertiges','Nausées','Sensation de chaleur','Palpitations','Déjà-vu'],
  inconscient:['Trouble de la parole','Automatismes','Tremblements','Contraction musculaire','Trouble de la mémoire à court terme','Chute / blessure','Morsure de la langue','Perte d’urine','Confusion au réveil','Fatigue après']};
 const TYL={conscient:'Conscient',inconscient:'Inconscient'};
-const COL={malaise:'malaises',regle:'regles',evenement:'evenements'};
+const COL={malaise:'malaises',regle:'regles',evenement:'evenements',valium:'valiums'};
 const MO=['janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
 
-let data={malaises:[],regles:[],evenements:[],reglages:{}},sha=null,cur=null,view='data',flt='all',sf='all',rng='6',loadErr='';
+let data={malaises:[],regles:[],evenements:[],valiums:[],reglages:{}},sha=null,cur=null,view='data',flt='all',sf='all',rng='6',loadErr='';
 
 /* ---- Outils ---- */
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const norm=s=>(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
 const dn=s=>{const m=/^(\d{4})-(\d\d)-(\d\d)/.exec(s||'');return m?Math.round(Date.UTC(+m[1],m[2]-1,+m[3])/864e5):null};
+const hm=s=>{const m=/^(\d{4})-(\d\d)-(\d\d)T(\d\d):(\d\d)/.exec(s||'');return m?Date.UTC(+m[1],m[2]-1,+m[3],+m[4],+m[5])/36e5:null};
 const dstr=n=>new Date(n*864e5).toISOString().slice(0,10);
 const todayN=()=>{const d=new Date();return Math.round(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())/864e5)};
 const fr=s=>{const m=/^(\d{4})-(\d\d)-(\d\d)(?:T(\d\d):(\d\d))?/.exec(s||'');return m?`${m[3]}/${m[2]}/${m[1]}${m[4]?' '+m[4]+':'+m[5]:''}`:''};
@@ -128,8 +129,8 @@ async function getFile(p){const c=cfg(),q=c.branch?'?ref='+encodeURIComponent(c.
 async function putFile(p,text,s,msg){const c=cfg(),b={message:msg,content:b64enc(text)};if(s)b.sha=s;if(c.branch)b.branch=c.branch;
  return(await(await gh('contents/'+p,{method:'PUT',body:JSON.stringify(b)})).json()).content.sha}
 function normData(d){d=d&&typeof d==='object'&&!Array.isArray(d)?d:{};
- ['malaises','regles','evenements'].forEach(k=>{if(!Array.isArray(d[k]))d[k]=[]});
- d.reglages={fenetreEvt:3,fenetreCycle:7,...(d.reglages||{})};return d}
+ ['malaises','regles','evenements','valiums'].forEach(k=>{if(!Array.isArray(d[k]))d[k]=[]});
+ d.reglages={fenetreEvt:3,fenetreCycle:7,fenetreVal:24,...(d.reglages||{})};return d}
 async function loadData(){const f=await getFile('data.json');
  if(!f){await gh('');data=normData(null);sha=null;return}   // 404 : on vérifie que le dépôt existe bien
  data=normData(JSON.parse(f.text));sha=f.sha}
@@ -148,11 +149,13 @@ function showView(v){view=v;['data','stats','graph','form','cfg'].forEach(x=>$('
 
 /* ---- Analyse ---- */
 function analyse(){const T=todayN(),W=Math.max(1,parseInt(data.reglages.fenetreCycle)||7),N=Number.isFinite(parseInt(data.reglages.fenetreEvt))?parseInt(data.reglages.fenetreEvt):3;
- const M=data.malaises.map(m=>({n:dn(m.date),t:m.date,ty:m.type,s:m.signes||[]})).filter(m=>m.n!=null).sort((a,b)=>a.n-b.n);
+ const H=Math.max(1,parseInt(data.reglages.fenetreVal)||24);
+ const M=data.malaises.map(m=>({n:dn(m.date),h:hm(m.date)??dn(m.date)*24+12,t:m.date,ty:m.type,s:m.signes||[]})).filter(m=>m.n!=null).sort((a,b)=>a.h-b.h);
+ const V=data.valiums.map(v=>({n:dn(v.date),h:hm(v.date)??dn(v.date)*24+12,t:v.date,dose:v.dose})).filter(v=>v.n!=null).sort((a,b)=>a.h-b.h);
  const R=data.regles.map(r=>{const d=dn(r.debut),f=r.fin?dn(r.fin):null;return{d,f,e:f!=null?f:Math.max(T,d),open:f==null}}).filter(r=>r.d!=null).sort((a,b)=>a.d-b.d);
  const E=data.evenements.map(e=>{const s=dn(e.debut),f=e.fin?dn(e.fin):s;return{s,f:f==null?s:f,lib:(e.libelle||'').trim()}}).filter(e=>e.s!=null&&e.lib);
- const all=[...M.map(m=>m.n),...R.map(r=>r.d),...E.map(e=>e.s)];
- return{T,W,N,M,R,E,first:all.length?Math.min(...all):T}}
+ const all=[...M.map(m=>m.n),...V.map(v=>v.n),...R.map(r=>r.d),...E.map(e=>e.s)];
+ return{T,W,N,H,M,V,R,E,first:all.length?Math.min(...all):T}}
 function phase(n,A){const{R,W}=A;
  for(const r of R)if(n>=r.d&&n<=r.e)return'reg';
  for(const r of R)if(r.d>n&&r.d-n<=W)return'pre';
@@ -162,10 +165,11 @@ function cycleInfo(n,A){if(n==null||!A.R.length)return'';let last=null;for(const
  const j=n-last.d+1;if(j>60)return'';const p=phase(n,A);
  return p==='reg'?`Règles · J${j}`:`J${j}`+(p==='pre'?' · avant':p==='post'?' · après':'')}
 function phaseStats(A){if(!A.R.length)return null;const o=A.R[0].d,C={};
- ['reg','pre','post','aut'].forEach(k=>C[k]={d:0,t:0,c:0,i:0});
+ ['reg','pre','post','aut'].forEach(k=>C[k]={d:0,t:0,c:0,i:0,v:0});
  for(let n=o;n<=A.T;n++)C[phase(n,A)].d++;
  let before=0;
  for(const m of A.M){if(m.n<o){before++;continue}if(m.n>A.T)continue;const c=C[phase(m.n,A)];c.t++;m.ty==='conscient'?c.c++:c.i++}
+ for(const p of A.V)if(p.n>=o&&p.n<=A.T)C[phase(p.n,A)].v++;
  return{C,before}}
 function evStats(A){const g={};A.E.forEach(e=>{const k=norm(e.lib);(g[k]=g[k]||{lib:e.lib,l:[]}).l.push(e)});
  const total=A.T-A.first+1,Mn=A.M.filter(m=>m.n>=A.first&&m.n<=A.T),res=[];
@@ -175,31 +179,45 @@ function evStats(A){const g={};A.E.forEach(e=>{const k=norm(e.lib);(g[k]=g[k]||{
   res.push({lib:x.lib,fois:x.l.length,d,t:inn,r:d?inn/d*10:null,ro:total-d>0?(Mn.length-inn)/(total-d)*10:null})}
  return res.sort((a,b)=>(b.r??-1)-(a.r??-1))}
 function monthRows(A){const mm={};
- A.M.forEach(m=>{const s=dstr(m.n).slice(0,7),o=mm[s]=mm[s]||{t:0,c:0,i:0};o.t++;m.ty==='conscient'?o.c++:o.i++});
- const keys=[];if(A.M.length){let[y,mo]=dstr(A.M[0].n).slice(0,7).split('-').map(Number);const[ty,tm]=dstr(A.T).slice(0,7).split('-').map(Number);
+ A.M.forEach(m=>{const s=dstr(m.n).slice(0,7),o=mm[s]=mm[s]||{t:0,c:0,i:0,v:0};o.t++;m.ty==='conscient'?o.c++:o.i++});
+ A.V.forEach(p=>{const s=dstr(p.n).slice(0,7),o=mm[s]=mm[s]||{t:0,c:0,i:0,v:0};o.v++});
+ const keys=[];if(A.M.length||A.V.length){let[y,mo]=dstr(Math.min(A.M.length?A.M[0].n:1e9,A.V.length?A.V[0].n:1e9)).slice(0,7).split('-').map(Number);const[ty,tm]=dstr(A.T).slice(0,7).split('-').map(Number);
   while(y<ty||(y===ty&&mo<=tm)){keys.push(`${y}-${String(mo).padStart(2,'0')}`);if(++mo>12){mo=1;y++}}}
- return keys.map(k=>({k,...(mm[k]||{t:0,c:0,i:0})}))}
+ return keys.map(k=>({k,...(mm[k]||{t:0,c:0,i:0,v:0})}))}
+
+function valStats(A){if(!A.V.length)return null;
+ const s=A.V[0].n*24,nowH=(Date.now()-new Date().getTimezoneOffset()*6e4)/36e5,H=A.H,iv=[];
+ A.V.forEach(p=>{const a=Math.max(p.h,s),b=Math.min(p.h+H,nowH);if(b>a)iv.push([a,b])});
+ iv.sort((x,y)=>x[0]-y[0]);const mg=[];
+ iv.forEach(x=>{const l=mg[mg.length-1];if(l&&x[0]<=l[1])l[1]=Math.max(l[1],x[1]);else mg.push([x[0],x[1]])});
+ const cov=mg.reduce((a,x)=>a+x[1]-x[0],0),inP={t:0,c:0,i:0},outM={t:0,c:0,i:0};let seen=0,fol=0;
+ for(const m of A.M){if(m.h<s||m.h>nowH)continue;seen++;
+  const o=mg.some(x=>m.h>=x[0]&&m.h<=x[1])?inP:outM;o.t++;m.ty==='conscient'?o.c++:o.i++;
+  if(A.V.some(p=>p.h>=m.h&&p.h<=m.h+H))fol++}
+ return{n:A.V.length,first:A.V[0].n,cov,out:Math.max(0,nowH-s-cov),inP,outM,seen,fol}}
 
 /* ---- Onglet Données ---- */
 function rowsAll(){const o=[];
  data.malaises.forEach(r=>o.push({k:'malaise',r,s:r.date||''}));
  data.regles.forEach(r=>o.push({k:'regle',r,s:(r.debut||'')+'T00:00'}));
  data.evenements.forEach(r=>o.push({k:'evenement',r,s:(r.debut||'')+'T00:00'}));
+ data.valiums.forEach(r=>o.push({k:'valium',r,s:r.date||''}));
  return o.sort((a,b)=>b.s.localeCompare(a.s))}
 function rowHtml(o,A){const r=o.r;let d,t,det,c='';
  if(o.k==='malaise'){d=fr(r.date);t=`<span class="tag ${esc(r.type)}">${esc(TYL[r.type]||'?')}</span>`;det=esc([...(r.signes||[]),r.notes].filter(Boolean).join(', '));c=cycleInfo(dn(r.date),A)}
  else if(o.k==='regle'){d=fr(r.debut)+' → '+(r.fin?fr(r.fin):'en cours');t='<span class="tag rg">Règles</span>';det=r.fin&&dn(r.fin)!=null?(dn(r.fin)-dn(r.debut)+1)+' jours':''}
+ else if(o.k==='valium'){d=fr(r.date);t='<span class="tag vl">Valium</span>';det=esc([r.dose!=null?String(r.dose).replace('.',',')+' mg':'',r.notes].filter(Boolean).join(' · '));c=cycleInfo(dn(r.date),A)}
  else{d=fr(r.debut)+(r.fin?' → '+fr(r.fin):'');t='<span class="tag ev">Évènement</span>';det=esc(r.libelle)}
  return `<tr data-k="${o.k}" data-id="${esc(r.id)}"><td>${d}</td><td>${t}</td><td>${det}</td><td>${esc(c)}</td></tr>`}
 function renderData(){const A=analyse();
- $('#flt').innerHTML=[['all','Tout'],['malaise','Malaises'],['regle','Règles'],['evenement','Évènements']].map(([k,l])=>`<button class="chip${flt===k?' on':''}" data-k="${k}">${l}</button>`).join('');
+ $('#flt').innerHTML=[['all','Tout'],['malaise','Malaises'],['valium','Valium'],['regle','Règles'],['evenement','Évènements']].map(([k,l])=>`<button class="chip${flt===k?' on':''}" data-k="${k}">${l}</button>`).join('');
  $('#tbody').innerHTML=rowsAll().filter(o=>flt==='all'||o.k===flt).map(o=>rowHtml(o,A)).join('')||'<tr><td colspan="4" class="empty">Aucune donnée.</td></tr>';
  let n='';if(loadErr)n+=`<div class="warn bad">${esc(loadErr)}</div>`;
  const op=A.R.filter(r=>r.open&&A.T-r.d>10);
  if(op.length)n+=`<div class="warn">Des règles sont « en cours » depuis ${A.T-op[0].d+1} jours : pense à saisir la date de fin.</div>`;
  $('#notes').innerHTML=n}
 $('#tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(b)showView(b.dataset.t)});
-$('#a-mal').onclick=()=>openForm('malaise');$('#a-evt').onclick=()=>openForm('evenement');$('#a-reg').onclick=()=>openForm('regle');
+$('#a-mal').onclick=()=>openForm('malaise');$('#a-val').onclick=()=>openForm('valium');$('#a-evt').onclick=()=>openForm('evenement');$('#a-reg').onclick=()=>openForm('regle');
 $('#flt').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;flt=b.dataset.k;renderData()});
 $('#tbl').addEventListener('click',e=>{const tr=e.target.closest('tr[data-id]');if(!tr)return;
  const k=tr.dataset.k,rec=data[COL[k]].find(x=>x.id===tr.dataset.id);if(rec)openForm(k,rec)});
@@ -207,6 +225,7 @@ $('#tbl').addEventListener('click',e=>{const tr=e.target.closest('tr[data-id]');
 /* ---- Formulaires ---- */
 const todayStr=()=>dstr(todayN());
 function newRec(k){const id=crypto.randomUUID();
+ if(k==='valium'){const l=[...data.valiums].sort((a,b)=>(b.date||'').localeCompare(a.date||''))[0];return{id,date:nowIn(),dose:l&&l.dose!=null?String(l.dose):'',notes:''}}
  return k==='malaise'?{id,type:'',date:nowIn(),signes:[],notes:''}:k==='regle'?{id,debut:todayStr(),fin:''}:{id,libelle:'',debut:todayStr(),fin:''}}
 function openForm(kind,rec){cur={kind,isNew:!rec,rec:rec?JSON.parse(JSON.stringify(rec)):newRec(kind)};renderForm();showView('form')}
 function renderForm(){const{kind,rec,isNew}=cur;let h='';
@@ -219,6 +238,9 @@ function renderForm(){const{kind,rec,isNew}=cur;let h='';
  else if(kind==='regle'){
   h+=`<h2>${isNew?'Nouvelles règles':'Modifier les règles'}</h2><label for="f-debut">Premier jour</label><input id="f-debut" data-f="debut" type="date" value="${esc(rec.debut)}">`;
   h+=`<label for="f-fin">Dernier jour (vide = en cours)</label><input id="f-fin" data-f="fin" type="date" value="${esc(rec.fin)}">`}
+ else if(kind==='valium'){
+  h+=`<h2>${isNew?'Prise de Valium':'Modifier la prise'}</h2><label for="f-date">Date et heure</label><input id="f-date" data-f="date" type="datetime-local" value="${esc(rec.date)}">`;
+  h+=`<label for="f-dose">Dose en mg (facultatif)</label><input id="f-dose" data-f="dose" type="text" inputmode="decimal" value="${esc(rec.dose)}"><label for="f-notes">Notes</label><input id="f-notes" data-f="notes" value="${esc(rec.notes)}">`}
  else{
   const libs=[...new Set(data.evenements.map(e=>(e.libelle||'').trim()).filter(Boolean))];
   h+=`<h2>${isNew?'Nouvel évènement':'Modifier l’évènement'}</h2><label for="f-lib">Libellé</label><input id="f-lib" data-f="libelle" list="dl-lib" value="${esc(rec.libelle)}" autocomplete="off"><datalist id="dl-lib">${libs.map(l=>`<option value="${esc(l)}">`).join('')}</datalist>`;
@@ -231,7 +253,7 @@ const lock=x=>document.querySelectorAll('#v-form button').forEach(b=>b.disabled=
 function saveDraft(){if(view!=='form'||!cur)return;try{lsSet('draft',JSON.stringify(cur))}catch(e){}}
 function restoreDraft(){let d;try{d=JSON.parse(lsGet('draft')||'null')}catch(e){}
  if(!d||!d.rec||!COL[d.kind])return;
- const l={malaise:'malaise',regle:'règles',evenement:'évènement'}[d.kind];
+ const l={malaise:'malaise',regle:'règles',evenement:'évènement',valium:'Valium'}[d.kind];
  if(!confirm('Reprendre le brouillon non enregistré ('+l+') ?')){lsDel('draft');return}
  cur=d;renderForm();showView('form')}
 const onField=e=>{const t=e.target;if(t.dataset&&t.dataset.f){cur.rec[t.dataset.f]=t.value;saveDraft()}};
@@ -250,6 +272,10 @@ async function submit(){const{kind}=cur,r={...cur.rec};let err='';
   if(!r.type)err='Choisis conscient ou inconscient';
   else if(dn(r.date)==null||!/T\d\d:\d\d/.test(r.date))err='La date et l’heure sont obligatoires';
   r.notes=(r.notes||'').trim();if(!r.notes)delete r.notes;if(!r.signes||!r.signes.length)delete r.signes}
+ else if(kind==='valium'){
+  if(dn(r.date)==null||!/T\d\d:\d\d/.test(r.date))err='La date et l’heure sont obligatoires';
+  const ds=String(r.dose??'').trim().replace(',','.');if(ds){const x=Number(ds);if(x>0&&x<=200)r.dose=x;else err=err||'Dose invalide'}else delete r.dose;
+  r.notes=(r.notes||'').trim();if(!r.notes)delete r.notes}
  else{
   if(kind==='evenement'){r.libelle=(r.libelle||'').trim();if(!r.libelle)err='Le libellé est obligatoire'}
   if(!err&&dn(r.debut)==null)err='La date de début est obligatoire';
@@ -265,7 +291,7 @@ async function del(){if(!confirm('Supprimer cet élément ?'))return;const id=cu
  catch(e){toast(errMsg(e),1);lock(false)}}
 
 /* ---- Onglet Statistiques ---- */
-const settingsCard=()=>`<div class="card"><h3>Réglages d’analyse</h3><label for="s-evt">Jours comptés après un évènement</label><input id="s-evt" type="number" inputmode="numeric" min="0" max="30" value="${parseInt(data.reglages.fenetreEvt)}"><label for="s-cyc">Fenêtre « avant / après les règles » (jours)</label><input id="s-cyc" type="number" inputmode="numeric" min="1" max="30" value="${parseInt(data.reglages.fenetreCycle)}"></div>`;
+const settingsCard=()=>`<div class="card"><h3>Réglages d’analyse</h3><label for="s-evt">Jours comptés après un évènement</label><input id="s-evt" type="number" inputmode="numeric" min="0" max="30" value="${parseInt(data.reglages.fenetreEvt)}"><label for="s-cyc">Fenêtre « avant / après les règles » (jours)</label><input id="s-cyc" type="number" inputmode="numeric" min="1" max="30" value="${parseInt(data.reglages.fenetreCycle)}"><label for="s-val">Heures comptées après une prise de Valium</label><input id="s-val" type="number" inputmode="numeric" min="1" max="168" value="${parseInt(data.reglages.fenetreVal)}"></div>`;
 const tr=c=>`<tr>${c.map((x,i)=>`<td${i?' class="n"':''}>${x}</td>`).join('')}</tr>`;
 const tb=(head,rows)=>`<div class="tw"><table><thead><tr>${head.map((x,i)=>`<th${i?' class="n"':''}>${x}</th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table></div>`;
 const card=(t,b)=>`<div class="card"><h3>${t}</h3>${b}</div>`;
@@ -273,18 +299,25 @@ const ml=k=>{const[y,m]=k.split('-');return MO[m-1]+' '+y};
 function renderStats(){const A=analyse(),W=A.W;let h=settingsCard();
  if(!A.M.length){$('#v-stats').innerHTML=h+'<p class="empty">Aucun malaise enregistré pour l’instant.</p>';return}
  const mr=monthRows(A).reverse(),sum=k=>mr.reduce((a,r)=>a+r[k],0);
- h+=card('Malaises par mois',tb(['Mois','Total','Conscients','Inconscients'],[...mr.map(r=>tr([ml(r.k),r.t,r.c,r.i])),tr(['<b>Total</b>',`<b>${sum('t')}</b>`,`<b>${sum('c')}</b>`,`<b>${sum('i')}</b>`])]));
+ h+=card('Malaises par mois',tb(['Mois','Total','Conscients','Inconscients','Valium'],[...mr.map(r=>tr([ml(r.k),r.t,r.c,r.i,r.v])),tr(['<b>Total</b>',`<b>${sum('t')}</b>`,`<b>${sum('c')}</b>`,`<b>${sum('i')}</b>`,`<b>${sum('v')}</b>`])]));
  const wr=mr.map(r=>{const b=[0,0,0,0,0];
   A.M.forEach(m=>{if(sf!=='all'&&m.ty!==sf)return;const s=dstr(m.n);if(s.slice(0,7)!==r.k)return;b[Math.min(4,Math.floor((+s.slice(8,10)-1)/7))]++});
   return tr([ml(r.k),...b,b.reduce((a,x)=>a+x,0)])});
  h+=card('Malaises par semaine du mois',`<select id="sf">${[['all','Tous les malaises'],['conscient','Conscients'],['inconscient','Inconscients']].map(([v,l])=>`<option value="${v}"${sf===v?' selected':''}>${l}</option>`).join('')}</select><div style="height:8px"></div>`+tb(['Mois','1–7','8–14','15–21','22–28','29+','Total'],wr)+'<p class="hint">Semaines du mois : jours 1–7, 8–14, 15–21, 22–28, puis 29 jusqu’à la fin du mois.</p>');
  const ps=phaseStats(A);
  if(!ps)h+=card('Malaises et règles','<p class="empty">Ajoute au moins une période de règles pour voir ce tableau.</p>');
- else{const C=ps.C,rt=(n,d)=>d?f1(n/d*10):'—',rowP=(l,o)=>tr([l,o.d,o.t,rt(o.t,o.d),`${o.c} (${rt(o.c,o.d)})`,`${o.i} (${rt(o.i,o.d)})`]),
-  add=(a,b)=>({d:a.d+b.d,t:a.t+b.t,c:a.c+b.c,i:a.i+b.i}),hors=add(add(C.pre,C.post),C.aut),tot=add(C.reg,hors);
-  h+=card('Malaises et règles',tb(['Période','Jours','Malaises','Par 10 j','Conscients (par 10 j)','Inconscients (par 10 j)'],[
+ else{const C=ps.C,rt=(n,d)=>d?f1(n/d*10):'—',rowP=(l,o)=>tr([l,o.d,o.t,rt(o.t,o.d),`${o.c} (${rt(o.c,o.d)})`,`${o.i} (${rt(o.i,o.d)})`,`${o.v} (${rt(o.v,o.d)})`]),
+  add=(a,b)=>({d:a.d+b.d,t:a.t+b.t,c:a.c+b.c,i:a.i+b.i,v:a.v+b.v}),hors=add(add(C.pre,C.post),C.aut),tot=add(C.reg,hors);
+  h+=card('Malaises et règles',tb(['Période','Jours','Malaises','Par 10 j','Conscients (par 10 j)','Inconscients (par 10 j)','Valium (par 10 j)'],[
    rowP('Pendant les règles',C.reg),rowP(`${W} j avant les règles`,C.pre),rowP(`${W} j après les règles`,C.post),rowP('Reste du cycle',C.aut),rowP('<b>Hors règles</b>',hors),rowP('<b>Total</b>',tot)])
    +`<p class="hint">« Par 10 j » = nombre de malaises ramené à 10 jours, pour comparer des périodes de durées différentes. Suivi calculé depuis le début de la première période de règles saisie${ps.before?` (${ps.before} malaise(s) plus ancien(s) non compté(s))`:''}.</p>`)}
+
+ const vs=valStats(A);
+ if(!vs)h+=card('Valium et malaises','<p class="empty">Aucune prise de Valium enregistrée.</p>');
+ else{const rt=(n,d)=>d>0?f1(n/d*10):'—',row=(l,o,hr)=>{const d=hr/24;return tr([l,f1(d),o.t,rt(o.t,d),`${o.c} (${rt(o.c,d)})`,`${o.i} (${rt(o.i,d)})`])},
+   tot={t:vs.inP.t+vs.outM.t,c:vs.inP.c+vs.outM.c,i:vs.inP.i+vs.outM.i};
+  h+=card('Valium et malaises',tb(['Période','Jours','Malaises','Par 10 j','Conscients (par 10 j)','Inconscients (par 10 j)'],[row(`${A.H} h après une prise`,vs.inP,vs.cov),row('Hors de ces périodes',vs.outM,vs.out),row('<b>Total</b>',tot,vs.cov+vs.out)])
+   +`<p class="hint">${vs.n} prise(s) depuis le ${fr(dstr(vs.first))} (comparaison calculée à partir de ce jour). ${vs.fol} malaise(s) sur ${vs.seen} ont été suivis d’une prise dans les ${A.H} h. Une prise peut aussi être une réaction à un malaise ou à ses signes avant-coureurs : à interpréter avec prudence.</p>`)}
  const es=evStats(A);
  h+=card('Corrélation avec les évènements',es.length?tb(['Évènement','Fois','Jours couverts','Malaises','Par 10 j','Hors évènement (par 10 j)'],es.map(x=>tr([esc(x.lib),x.fois,x.d,x.t,f1(x.r),f1(x.ro)])))
   +`<p class="hint">Jours couverts = le jour de l’évènement (ou sa période) + ${A.N} jour(s) après. Les évènements de même libellé sont regroupés.</p>`:'<p class="empty">Aucun évènement enregistré.</p>');
@@ -294,10 +327,10 @@ function renderStats(){const A=analyse(),W=A.W;let h=settingsCard();
  $('#v-stats').innerHTML=h}
 $('#v-stats').addEventListener('change',async e=>{
  if(e.target.id==='sf'){sf=e.target.value;renderStats();return}
- if(e.target.id==='s-evt'||e.target.id==='s-cyc'){
-  const a=Math.max(0,Math.min(30,parseInt($('#s-evt').value)||0)),b=Math.max(1,Math.min(30,parseInt($('#s-cyc').value)||7));
-  data.reglages={...data.reglages,fenetreEvt:a,fenetreCycle:b};renderStats();
-  try{await commit(d=>{d.reglages={...d.reglages,fenetreEvt:a,fenetreCycle:b}});toast('Réglage enregistré ✔')}catch(err){toast(errMsg(err),1)}}});
+ if(e.target.id==='s-evt'||e.target.id==='s-cyc'||e.target.id==='s-val'){
+  const a=Math.max(0,Math.min(30,parseInt($('#s-evt').value)||0)),b=Math.max(1,Math.min(30,parseInt($('#s-cyc').value)||7)),v=Math.max(1,Math.min(168,parseInt($('#s-val').value)||24));
+  data.reglages={...data.reglages,fenetreEvt:a,fenetreCycle:b,fenetreVal:v};renderStats();
+  try{await commit(d=>{d.reglages={...d.reglages,fenetreEvt:a,fenetreCycle:b,fenetreVal:v}});toast('Réglage enregistré ✔')}catch(err){toast(errMsg(err),1)}}});
 
 /* ---- Onglet Graphiques (SVG dessinés à la main) ---- */
 const svgW=(w,H,s)=>`<svg width="${w}" height="${H}" viewBox="0 0 ${w} ${H}" role="img">${s}</svg>`;
@@ -312,9 +345,9 @@ function grid(x0,x1,X,top,bot){const ticks=[];let d=new Date(Date.UTC(...dstr(x0
  return s}
 function bands(A,X,top,h){return A.R.filter(r=>r.e>=A.x0&&r.d<A.x1).map(r=>{const a=X(Math.max(r.d,A.x0)),b=X(Math.min(r.e+1,A.x1));
  return `<rect class="rg" x="${a}" y="${top}" width="${Math.max(2,b-a)}" height="${h}"><title>Règles ${fr(dstr(r.d))} → ${r.open?'en cours':fr(dstr(r.e))}</title></rect>`}).join('')}
-function chTimeline(A,w){const L=84,R=10,top=8,x0=A.x0,x1=A.x1,X=n=>L+(n-x0)/(x1-x0)*(w-L-R),yC=top+48+20,yI=yC+36,bot=yI+22,H=bot+26;
+function chTimeline(A,w){const L=84,R=10,top=8,x0=A.x0,x1=A.x1,X=n=>L+(n-x0)/(x1-x0)*(w-L-R),yC=top+48+20,yI=yC+36,yV=yI+30,bot=yV+22,H=bot+26;
  let s=`<clipPath id="cpT"><rect x="${L}" y="0" width="${w-L-R}" height="${H}"/></clipPath>`+bands(A,X,top,bot-top)+grid(x0,x1,X,top,bot);
- s+=`<text class="tx" x="4" y="${top+12}">Évènements</text><text class="tx" x="4" y="${yC+4}">Conscients</text><text class="tx" x="4" y="${yI+4}">Inconscients</text><g clip-path="url(#cpT)">`;
+ s+=`<text class="tx" x="4" y="${top+12}">Évènements</text><text class="tx" x="4" y="${yC+4}">Conscients</text><text class="tx" x="4" y="${yI+4}">Inconscients</text><text class="tx" x="4" y="${yV+4}">Valium</text><g clip-path="url(#cpT)">`;
  A.E.forEach((e,i)=>{if(e.f<x0||e.s>=x1)return;const y=top+(i%3)*16,xs=X(Math.max(e.s,x0)),xe=X(Math.min(e.f+1,x1)),rg=e.f>e.s,
    t=`${e.lib} (${fr(dstr(e.s))}${rg?' → '+fr(dstr(e.f)):''})`,lab=esc(e.lib.length>16?e.lib.slice(0,15)+'…':e.lib);
   s+=rg?`<rect class="ev" x="${xs}" y="${y+2}" width="${Math.max(3,xe-xs)}" height="8" rx="3"><title>${esc(t)}</title></rect>`:`<path class="ev" d="M${X(e.s+.5)} ${y+1}l5 5l-5 5l-5-5z"><title>${esc(t)}</title></path>`;
@@ -323,6 +356,7 @@ function chTimeline(A,w){const L=84,R=10,top=8,x0=A.x0,x1=A.x1,X=n=>L+(n-x0)/(x1
  const cnt={};
  A.M.forEach(m=>{if(m.n<x0||m.n>=x1)return;const k=m.n+'|'+m.ty,c=cnt[k]=(cnt[k]||0)+1,cy=(m.ty==='conscient'?yC:yI)-(c-1)*7;
   s+=`<circle class="${m.ty==='conscient'?'c1':'c2'} pt" cx="${X(m.n+.5)}" cy="${cy}" r="5"><title>${fr(m.t)} · ${esc(TYL[m.ty]||'')}${m.s.length?' · '+esc(m.s.join(', ')):''}</title></circle>`});
+ A.V.forEach(p=>{if(p.n<x0||p.n>=x1)return;const x=X(p.n+.5);s+=`<path class="vl pt" d="M${x} ${yV-6}l6 11h-12z"><title>${fr(p.t)} · Valium${p.dose!=null?' '+String(p.dose).replace('.',',')+' mg':''}</title></path>`});
  s+=`<line class="td" x1="${X(A.T+.5)}" x2="${X(A.T+.5)}" y1="${top}" y2="${bot}"/></g>`;
  return svgW(w,H,s)}
 function chWeeks(A,w){const L=34,R=10,top=12,h=150,H=top+h+30,x0=A.x0,x1=A.x1,X=n=>L+(n-x0)/(x1-x0)*(w-L-R),wk={};
@@ -359,7 +393,7 @@ function renderGraph(){const A=analyse(),el=$('#v-graph');
  if(!A.M.length&&!A.R.length){el.innerHTML='<p class="empty">Pas encore de données.</p>';return}
  const w=Math.max(el.clientWidth-26,560),x0=rng==='all'?Math.min(A.first,A.T-29):A.T-Math.round(+rng*30.4),B={...A,x0,x1:A.T+1};
  let h=`<div class="chips">${[['3','3 mois'],['6','6 mois'],['12','1 an'],['all','Tout']].map(([v,l])=>`<button class="chip${rng===v?' on':''}" data-r="${v}">${l}</button>`).join('')}</div>`;
- h+=`<div class="lg"><span><i class="sw c1"></i>Conscient</span><span><i class="sw c2"></i>Inconscient</span><span><i class="sw rg"></i>Règles</span><span><i class="sw ev"></i>Évènement</span></div>`;
+ h+=`<div class="lg"><span><i class="sw c1"></i>Conscient</span><span><i class="sw c2"></i>Inconscient</span><span><i class="sw rg"></i>Règles</span><span><i class="sw ev"></i>Évènement</span><span><i class="sw vl"></i>Valium</span></div>`;
  h+=card('Chronologie',`<div class="cw">${chTimeline(B,w)}</div>`)+card('Malaises par semaine',`<div class="cw">${chWeeks(B,w)}</div>`)
   +card('Malaises par mois',`<div class="cw">${chMonths(A,w)}</div>`)+card('Malaises selon le jour du cycle',`<div class="cw">${chCycle(A,w)}</div><p class="hint">Tous cycles confondus. La zone rose = durée moyenne des règles.</p>`);
  el.innerHTML=h}

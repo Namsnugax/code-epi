@@ -240,8 +240,10 @@ function renderForm(){const{kind,rec,isNew}=cur;let h='';
  if(kind==='malaise'){
   h+=`<h2>${isNew?'Nouveau malaise':'Modifier le malaise'}</h2><label>Type</label><div class="chips">${['conscient','inconscient'].map(t=>`<button type="button" class="chip big${rec.type===t?' on':''}" data-ty="${t}">${TYL[t]}</button>`).join('')}</div>`;
   h+=`<label for="f-date">Date et heure</label><input id="f-date" data-f="date" type="datetime-local" value="${esc(rec.date)}">`;
-  if(rec.type){const sg=rec.signes||[],opts=[...SIGNS[rec.type],...sg.filter(s=>!SIGNS[rec.type].includes(s))];
-   h+=`<label>Signes (facultatif)</label>`+opts.map(s=>`<label class="ck"><input type="checkbox" data-sg="${esc(s)}"${sg.includes(s)?' checked':''}> ${esc(s)}</label>`).join('')}
+  if(rec.type){const sg=rec.signes||[],ck=s=>`<label class="ck"><input type="checkbox" data-sg="${esc(s)}"${sg.includes(s)?' checked':''}> ${esc(s)}</label>`,
+   groups=rec.type==='inconscient'?[['Signes inconscients (facultatif)',SIGNS.inconscient],['Signes conscients, avant ou pendant (facultatif)',SIGNS.conscient]]:[['Signes (facultatif)',SIGNS.conscient]],
+   known=[...SIGNS.conscient,...SIGNS.inconscient],extra=sg.filter(s=>!known.includes(s));
+   h+=groups.map(([t,l])=>`<label>${t}</label>`+l.map(ck).join('')).join('')+extra.map(ck).join('')}
   h+=`<label for="f-notes">Autre / notes</label><input id="f-notes" data-f="notes" value="${esc(rec.notes)}">`}
  else if(kind==='regle'){
   h+=`<h2>${isNew?'Nouvelles règles':'Modifier les règles'}</h2><label for="f-debut">Premier jour</label><input id="f-debut" data-f="debut" type="date" value="${esc(rec.debut)}">`;
@@ -275,7 +277,7 @@ $('#v-form').addEventListener('change',e=>{onField(e);const t=e.target;
  if(t.dataset&&t.dataset.sg!==undefined){const a=cur.rec.signes=cur.rec.signes||[],s=t.dataset.sg,i=a.indexOf(s);
   if(t.checked){if(i<0)a.push(s)}else if(i>=0)a.splice(i,1);saveDraft()}});
 $('#v-form').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
- if(b.dataset.ty){cur.rec.type=b.dataset.ty;cur.rec.signes=(cur.rec.signes||[]).filter(s=>SIGNS[b.dataset.ty].includes(s));renderForm();saveDraft();return}
+ if(b.dataset.ty){cur.rec.type=b.dataset.ty;const ok=b.dataset.ty==='inconscient'?[...SIGNS.inconscient,...SIGNS.conscient]:SIGNS.conscient;cur.rec.signes=(cur.rec.signes||[]).filter(s=>ok.includes(s));renderForm();saveDraft();return}
  if(b.id==='f-ok')submit();
  else if(b.id==='f-cancel'){lsDel('draft');showView('data')}
  else if(b.id==='f-dup')dup();

@@ -89,7 +89,7 @@ const cfg=()=>{try{return JSON.parse(lsGet('cfg')||'{}')}catch(e){return{}}};
 
 /* ---- Listes de signes : modifie-les ici si besoin ---- */
 const SIGNS={
- conscient:['Bouche sèche','Distorsion visuelle','Vertiges','Nausées','Sensation de chaleur','Palpitations','Respiration accélérée','Tension','Déjà-vu'],
+ conscient:['Bouche sèche','Distorsion visuelle','Vertiges','Nausées','Sensation de chaleur','Palpitations','Respiration accélérée','Tension','Long','Fort','Déjà-vu'],
  inconscient:['Trouble de la parole','Automatismes','Tremblements','Contraction musculaire','Trouble de la mémoire à court terme','Chute / blessure','Morsure de la langue','Perte d’urine','Confusion au réveil','Fatigue après']};
 const TYL={conscient:'Conscient',inconscient:'Inconscient',generalisee:'Crise généralisée'};
 const tk=m=>m.ty==='conscient'?'c':m.ty==='generalisee'?'g':'i';
@@ -243,7 +243,7 @@ function openForm(kind,rec){cur={kind,isNew:!rec,rec:rec?JSON.parse(JSON.stringi
 function renderForm(){const{kind,rec,isNew}=cur;let h='';
  if(kind==='malaise'){
   h+=`<h2>${isNew?'Nouveau malaise':'Modifier le malaise'}</h2><label>Type</label><div class="chips">${['conscient','inconscient','generalisee'].map(t=>`<button type="button" class="chip big${rec.type===t?' on':''}" data-ty="${t}">${TYL[t]}</button>`).join('')}</div>`;
-  h+=`<label for="f-date">Date et heure</label><input id="f-date" data-f="date" type="datetime-local" value="${esc(rec.date)}">`;
+  h+=`<label for="f-date">Date et heure</label><input id="f-date" data-f="date" type="datetime-local" max="${nowIn()}" value="${esc(rec.date)}">`;
   if(rec.type){const sg=rec.signes||[],ck=s=>`<label class="ck"><input type="checkbox" data-sg="${esc(s)}"${sg.includes(s)?' checked':''}> ${esc(s)}</label>`,
    groups=rec.type!=='conscient'?[['Signes inconscients (facultatif)',SIGNS.inconscient],['Signes conscients, avant ou pendant (facultatif)',SIGNS.conscient]]:[['Signes (facultatif)',SIGNS.conscient]],
    known=[...SIGNS.conscient,...SIGNS.inconscient],extra=sg.filter(s=>!known.includes(s));
@@ -255,11 +255,11 @@ function renderForm(){const{kind,rec,isNew}=cur;let h='';
   h+=`<label for="f-fin">Dernier jour (vide = en cours)</label><input id="f-fin" data-f="fin" type="date" value="${esc(rec.fin)}">`}
  else if(kind==='monte'){
   const sg=rec.signes||[],opts=[...SIGNS.conscient,...sg.filter(x=>!SIGNS.conscient.includes(x))];
-  h+=`<h2>${isNew?'Nouveau monté':'Modifier le monté'}</h2><p class="hint">Début de malaise qui n’a pas évolué.</p><label for="f-date">Date et heure</label><input id="f-date" data-f="date" type="datetime-local" value="${esc(rec.date)}">`;
+  h+=`<h2>${isNew?'Nouveau monté':'Modifier le monté'}</h2><p class="hint">Début de malaise qui n’a pas évolué.</p><label for="f-date">Date et heure</label><input id="f-date" data-f="date" type="datetime-local" max="${nowIn()}" value="${esc(rec.date)}">`;
   h+=`<label>Signes (facultatif)</label>`+opts.map(x=>`<label class="ck"><input type="checkbox" data-sg="${esc(x)}"${sg.includes(x)?' checked':''}> ${esc(x)}</label>`).join('');
   h+=`<label for="f-notes">Autre / notes</label><input id="f-notes" data-f="notes" value="${esc(rec.notes)}">`}
  else if(kind==='valium'){
-  h+=`<h2>${isNew?'Prise de Valium':'Modifier la prise'}</h2><label for="f-date">Date et heure</label><input id="f-date" data-f="date" type="datetime-local" value="${esc(rec.date)}">`;
+  h+=`<h2>${isNew?'Prise de Valium':'Modifier la prise'}</h2><label for="f-date">Date et heure</label><input id="f-date" data-f="date" type="datetime-local" max="${nowIn()}" value="${esc(rec.date)}">`;
   h+=`<label for="f-dose">Dose en mg (facultatif)</label><input id="f-dose" data-f="dose" type="text" inputmode="decimal" value="${esc(rec.dose)}"><label for="f-notes">Notes</label><input id="f-notes" data-f="notes" value="${esc(rec.notes)}">`}
  else{
   const libs=[...new Set(data.evenements.map(e=>(e.libelle||'').trim()).filter(Boolean))];
@@ -288,6 +288,15 @@ $('#v-form').addEventListener('click',e=>{const b=e.target.closest('button');if(
  else if(b.id==='f-cancel'){lsDel('draft');showView('data')}
  else if(b.id==='f-dup')dup();
  else if(b.id==='f-del')del()});
+function findDup(kind,r){const others=data[COL[kind]].filter(x=>x.id!==r.id);
+ if(kind==='regle'){const a=dn(r.debut),b=r.fin?dn(r.fin):Math.max(todayN(),a);
+  const o=others.find(x=>{const c=dn(x.debut),d=x.fin?dn(x.fin):Math.max(todayN(),c);return c!=null&&c<=b&&a<=d});
+  return o?`Des règles sont déjà enregistrées sur cette période (${fr(o.debut)} → ${o.fin?fr(o.fin):'en cours'}).`:''}
+ if(kind==='evenement'){const a=dn(r.debut),b=r.fin?dn(r.fin):a,l=norm(r.libelle);
+  const o=others.find(x=>{const c=dn(x.debut),d=x.fin?dn(x.fin):c;return norm(x.libelle)===l&&c!=null&&c<=b&&a<=d});
+  return o?`Un évènement « ${o.libelle} » existe déjà à ces dates (${fr(o.debut)}${o.fin?' → '+fr(o.fin):''}).`:''}
+ const t=hm(r.date),o=others.find(x=>{const u=hm(x.date);return u!=null&&Math.abs(u-t)*60<=10&&(kind!=='malaise'||x.type===r.type)});
+ return o?`${{malaise:'Un malaise du même type est déjà enregistré',monte:'Un monté est déjà enregistré',valium:'Une prise de Valium est déjà enregistrée'}[kind]} le ${fr(o.date)} (à 10 minutes près).`:''}
 async function submit(){const{kind}=cur,r={...cur.rec};let err='';
  if(kind==='malaise'){
   if(!r.type)err='Choisis le type de malaise';
@@ -306,7 +315,9 @@ async function submit(){const{kind}=cur,r={...cur.rec};let err='';
   if(!err&&dn(r.debut)==null)err='La date de début est obligatoire';
   if(!err&&r.fin&&dn(r.fin)<dn(r.debut))err='La fin est avant le début';
   if(!r.fin)delete r.fin}
+ if(!err&&['malaise','monte','valium'].includes(kind)&&r.date>nowIn())err='La date et l’heure ne peuvent pas être dans le futur';
  if(err){toast(err,1);return}
+ const dp=findDup(kind,r);if(dp&&!confirm('Doublon possible : '+dp+'\n\nEnregistrer quand même ?'))return;
  lock(true);
  try{await commit(d=>{const a=d[COL[kind]],i=a.findIndex(x=>x.id===r.id);if(i<0)a.push(r);else a[i]=r});lsDel('draft');toast('Enregistré ✔');showView('data')}
  catch(e){toast(errMsg(e),1);lock(false)}}

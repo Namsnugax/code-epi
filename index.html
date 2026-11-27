@@ -89,7 +89,7 @@ const cfg=()=>{try{return JSON.parse(lsGet('cfg')||'{}')}catch(e){return{}}};
 
 /* ---- Listes de signes : modifie-les ici si besoin ---- */
 const SIGNS={
- conscient:['Bouche sèche','Distorsion visuelle','Vertiges','Nausées','Sensation de chaleur','Palpitations','Respiration accélérée','Tension','Long','Fort','Déjà-vu'],
+ conscient:['Bouche sèche','Distorsion visuelle','Vertiges','Nausées','Sensation de chaleur','Palpitations','Respiration accélérée','Tension','Long','Fort','Tête lourde','Déjà-vu'],
  inconscient:['Trouble de la parole','Automatismes','Tremblements','Contraction musculaire','Trouble de la mémoire à court terme','Chute / blessure','Morsure de la langue','Perte d’urine','Confusion au réveil','Fatigue après']};
 const TYL={conscient:'Conscient',inconscient:'Inconscient',generalisee:'Crise généralisée'};
 const tk=m=>m.ty==='conscient'?'c':m.ty==='generalisee'?'g':'i';

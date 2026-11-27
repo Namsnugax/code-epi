@@ -6,8 +6,8 @@
 <link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
 <title>Suivi</title>
 <style>
-:root{--bg:#f2f5f6;--sf:#fff;--ink:#14252b;--mut:#5b6b70;--ac:#0f7b6c;--ln:#d5dde0;--bad:#b3261e;--c1:#0f7b6c;--c2:#c2410c;--rg:rgba(214,60,110,.2);--ev:#5561c9;--vl:#7b3fb5;--mt:#b7791f;color-scheme:light dark}
-@media(prefers-color-scheme:dark){:root{--bg:#0e1a1e;--sf:#16272d;--ink:#e8eff1;--mut:#93a5ab;--ac:#3fc3ae;--ln:#2a3d44;--bad:#ff8a80;--c1:#3fc3ae;--c2:#ff9e64;--rg:rgba(255,120,160,.25);--ev:#9aa5ff;--vl:#c9a0ff;--mt:#e8b04a}}
+:root{--bg:#f2f5f6;--sf:#fff;--ink:#14252b;--mut:#5b6b70;--ac:#0f7b6c;--ln:#d5dde0;--bad:#b3261e;--c1:#0f7b6c;--c2:#c2410c;--c3:#c0182d;--rg:rgba(214,60,110,.2);--ev:#5561c9;--vl:#7b3fb5;--mt:#b7791f;color-scheme:light dark}
+@media(prefers-color-scheme:dark){:root{--bg:#0e1a1e;--sf:#16272d;--ink:#e8eff1;--mut:#93a5ab;--ac:#3fc3ae;--ln:#2a3d44;--bad:#ff8a80;--c1:#3fc3ae;--c2:#ff9e64;--c3:#ff5c6c;--rg:rgba(255,120,160,.25);--ev:#9aa5ff;--vl:#c9a0ff;--mt:#e8b04a}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,sans-serif;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
 header{position:sticky;top:0;z-index:5;display:flex;gap:8px;align-items:center;padding:10px 14px;background:var(--bg)}
@@ -41,7 +41,7 @@ th.n,td.n{text-align:right;white-space:nowrap}
 tbody tr[data-id]{cursor:pointer}
 #tbl td:first-child{white-space:nowrap}
 .tag{display:inline-block;padding:1px 8px;border-radius:99px;font-size:12px;white-space:nowrap;border:1px solid var(--ln)}
-.tag.conscient{border-color:var(--c1);color:var(--c1)}.tag.inconscient{border-color:var(--c2);color:var(--c2)}
+.tag.conscient{border-color:var(--c1);color:var(--c1)}.tag.inconscient{border-color:var(--c2);color:var(--c2)}.tag.generalisee{border-color:var(--c3);color:var(--c3)}
 .tag.rg{border-color:#d63c6e;color:#d63c6e}.tag.ev{border-color:var(--ev);color:var(--ev)}.tag.vl{border-color:var(--vl);color:var(--vl)}.tag.mt{border-color:var(--mt);color:var(--mt)}
 .card{background:var(--sf);border:1px solid var(--ln);border-radius:12px;padding:12px;margin-bottom:14px}
 .card .tw{border-radius:8px}
@@ -50,12 +50,12 @@ tbody tr[data-id]{cursor:pointer}
 .warn.bad{border-color:var(--bad)}
 .lg{display:flex;flex-wrap:wrap;gap:12px;font-size:13px;color:var(--mut);margin:6px 0 12px}
 .sw{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
-.sw.c1{background:var(--c1)}.sw.c2{background:var(--c2)}.sw.rg{background:var(--rg)}.sw.ev{background:var(--ev)}.sw.vl{background:var(--vl)}.sw.mt{background:var(--mt)}
+.sw.c1{background:var(--c1)}.sw.c2{background:var(--c2)}.sw.c3{background:var(--c3)}.sw.rg{background:var(--rg)}.sw.ev{background:var(--ev)}.sw.vl{background:var(--vl)}.sw.mt{background:var(--mt)}
 .cw{overflow-x:auto}
 svg{display:block;font-family:inherit}
-svg .c1{fill:var(--c1)}svg .c2{fill:var(--c2)}svg .rg{fill:var(--rg)}svg .ev{fill:var(--ev)}svg .vl{fill:var(--vl)}svg .mt{fill:var(--mt)}
+svg .c1{fill:var(--c1)}svg .c2{fill:var(--c2)}svg .c3{fill:var(--c3)}svg .rg{fill:var(--rg)}svg .ev{fill:var(--ev)}svg .vl{fill:var(--vl)}svg .mt{fill:var(--mt)}
 svg .pt{stroke:var(--sf);stroke-width:1.5}
-svg .ln1,svg .ln2{fill:none;stroke-width:2}svg .ln1{stroke:var(--c1)}svg .ln2{stroke:var(--c2)}
+svg .ln1,svg .ln2,svg .ln3{fill:none;stroke-width:2}svg .ln1{stroke:var(--c1)}svg .ln2{stroke:var(--c2)}svg .ln3{stroke:var(--c3)}
 svg .ax{stroke:var(--ln);stroke-width:1}svg .td{stroke:var(--mut);stroke-dasharray:3 3}
 svg .tx{fill:var(--mut);font-size:11px}svg .sm{font-size:10px}
 #toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;max-width:90%;display:none;z-index:9}
@@ -91,7 +91,9 @@ const cfg=()=>{try{return JSON.parse(lsGet('cfg')||'{}')}catch(e){return{}}};
 const SIGNS={
  conscient:['Bouche sèche','Distorsion visuelle','Vertiges','Nausées','Sensation de chaleur','Palpitations','Respiration accélérée','Tension','Déjà-vu'],
  inconscient:['Trouble de la parole','Automatismes','Tremblements','Contraction musculaire','Trouble de la mémoire à court terme','Chute / blessure','Morsure de la langue','Perte d’urine','Confusion au réveil','Fatigue après']};
-const TYL={conscient:'Conscient',inconscient:'Inconscient'};
+const TYL={conscient:'Conscient',inconscient:'Inconscient',generalisee:'Crise généralisée'};
+const tk=m=>m.ty==='conscient'?'c':m.ty==='generalisee'?'g':'i';
+const tot3=r=>(r.c||0)+(r.i||0)+(r.g||0);
 const COL={malaise:'malaises',regle:'regles',evenement:'evenements',valium:'valiums',monte:'montes'};
 const MO=['janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
 
@@ -131,6 +133,7 @@ async function putFile(p,text,s,msg){const c=cfg(),b={message:msg,content:b64enc
  return(await(await gh('contents/'+p,{method:'PUT',body:JSON.stringify(b)})).json()).content.sha}
 function normData(d){d=d&&typeof d==='object'&&!Array.isArray(d)?d:{};
  ['malaises','regles','evenements','valiums','montes'].forEach(k=>{if(!Array.isArray(d[k]))d[k]=[]});
+ d.malaises.forEach(m=>{if(m.crise){m.type='generalisee';delete m.crise}});   // ancien format (case « crise généralisée »)
  d.reglages={fenetreEvt:3,fenetreCycle:7,fenetreVal:24,...(d.reglages||{})};return d}
 async function loadData(){const f=await getFile('data.json');
  if(!f){await gh('');data=normData(null);sha=null;return}   // 404 : on vérifie que le dépôt existe bien
@@ -151,7 +154,7 @@ function showView(v){view=v;['data','stats','graph','form','cfg'].forEach(x=>$('
 /* ---- Analyse ---- */
 function analyse(){const T=todayN(),W=Math.max(1,parseInt(data.reglages.fenetreCycle)||7),N=Number.isFinite(parseInt(data.reglages.fenetreEvt))?parseInt(data.reglages.fenetreEvt):3;
  const H=Math.max(1,parseInt(data.reglages.fenetreVal)||24);
- const M=data.malaises.map(m=>({n:dn(m.date),h:hm(m.date)??dn(m.date)*24+12,t:m.date,ty:m.type,g:!!m.crise,du:+m.duree||0,s:m.signes||[]})).filter(m=>m.n!=null).sort((a,b)=>a.h-b.h);
+ const M=data.malaises.map(m=>({n:dn(m.date),h:hm(m.date)??dn(m.date)*24+12,t:m.date,ty:m.type,g:m.type==='generalisee',du:+m.duree||0,s:m.signes||[]})).filter(m=>m.n!=null).sort((a,b)=>a.h-b.h);
  const V=data.valiums.map(v=>({n:dn(v.date),h:hm(v.date)??dn(v.date)*24+12,t:v.date,dose:v.dose})).filter(v=>v.n!=null).sort((a,b)=>a.h-b.h);
  const MT=data.montes.map(m=>({n:dn(m.date),h:hm(m.date)??dn(m.date)*24+12,t:m.date,s:m.signes||[]})).filter(m=>m.n!=null).sort((a,b)=>a.h-b.h);
  const R=data.regles.map(r=>{const d=dn(r.debut),f=r.fin?dn(r.fin):null;return{d,f,e:f!=null?f:Math.max(T,d),open:f==null}}).filter(r=>r.d!=null).sort((a,b)=>a.d-b.d);
@@ -170,7 +173,7 @@ function phaseStats(A){if(!A.R.length)return null;const o=A.R[0].d,C={};
  ['reg','pre','post','aut'].forEach(k=>C[k]={d:0,t:0,c:0,i:0,v:0,q:0,g:0});
  for(let n=o;n<=A.T;n++)C[phase(n,A)].d++;
  let before=0;
- for(const m of A.M){if(m.n<o){before++;continue}if(m.n>A.T)continue;const c=C[phase(m.n,A)];c.t++;m.ty==='conscient'?c.c++:c.i++;if(m.g)c.g++}
+ for(const m of A.M){if(m.n<o){before++;continue}if(m.n>A.T)continue;const c=C[phase(m.n,A)];c.t++;c[tk(m)]++}
  for(const p of A.V)if(p.n>=o&&p.n<=A.T)C[phase(p.n,A)].v++;
  for(const p of A.MT)if(p.n>=o&&p.n<=A.T)C[phase(p.n,A)].q++;
  return{C,before}}
@@ -182,7 +185,7 @@ function evStats(A){const g={};A.E.forEach(e=>{const k=norm(e.lib);(g[k]=g[k]||{
   res.push({lib:x.lib,fois:x.l.length,d,t:inn,r:d?inn/d*10:null,ro:total-d>0?(Mn.length-inn)/(total-d)*10:null})}
  return res.sort((a,b)=>(b.r??-1)-(a.r??-1))}
 function monthRows(A){const mm={};
- A.M.forEach(m=>{const s=dstr(m.n).slice(0,7),o=mm[s]=mm[s]||{t:0,c:0,i:0,v:0,q:0,g:0};o.t++;m.ty==='conscient'?o.c++:o.i++;if(m.g)o.g++});
+ A.M.forEach(m=>{const s=dstr(m.n).slice(0,7),o=mm[s]=mm[s]||{t:0,c:0,i:0,v:0,q:0,g:0};o.t++;o[tk(m)]++});
  A.V.forEach(p=>{const s=dstr(p.n).slice(0,7),o=mm[s]=mm[s]||{t:0,c:0,i:0,v:0,q:0,g:0};o.v++});
  A.MT.forEach(p=>{const s=dstr(p.n).slice(0,7),o=mm[s]=mm[s]||{t:0,c:0,i:0,v:0,q:0,g:0};o.q++});
  const keys=[];if(A.M.length||A.V.length||A.MT.length){let[y,mo]=dstr(Math.min(A.M.length?A.M[0].n:1e9,A.V.length?A.V[0].n:1e9,A.MT.length?A.MT[0].n:1e9)).slice(0,7).split('-').map(Number);const[ty,tm]=dstr(A.T).slice(0,7).split('-').map(Number);
@@ -194,9 +197,9 @@ function valStats(A){if(!A.V.length)return null;
  A.V.forEach(p=>{const a=Math.max(p.h,s),b=Math.min(p.h+H,nowH);if(b>a)iv.push([a,b])});
  iv.sort((x,y)=>x[0]-y[0]);const mg=[];
  iv.forEach(x=>{const l=mg[mg.length-1];if(l&&x[0]<=l[1])l[1]=Math.max(l[1],x[1]);else mg.push([x[0],x[1]])});
- const cov=mg.reduce((a,x)=>a+x[1]-x[0],0),inP={t:0,c:0,i:0},outM={t:0,c:0,i:0};let seen=0,fol=0;
+ const cov=mg.reduce((a,x)=>a+x[1]-x[0],0),inP={t:0,c:0,i:0,g:0},outM={t:0,c:0,i:0,g:0};let seen=0,fol=0;
  for(const m of A.M){if(m.h<s||m.h>nowH)continue;seen++;
-  const o=mg.some(x=>m.h>=x[0]&&m.h<=x[1])?inP:outM;o.t++;m.ty==='conscient'?o.c++:o.i++;
+  const o=mg.some(x=>m.h>=x[0]&&m.h<=x[1])?inP:outM;o.t++;o[tk(m)]++;
   if(A.V.some(p=>p.h>=m.h&&p.h<=m.h+H))fol++}
  let qi=0,qo=0;for(const m of A.MT){if(m.h<s||m.h>nowH)continue;if(mg.some(x=>m.h>=x[0]&&m.h<=x[1]))qi++;else qo++}
  inP.q=qi;outM.q=qo;
@@ -211,7 +214,7 @@ function rowsAll(){const o=[];
  data.montes.forEach(r=>o.push({k:'monte',r,s:r.date||''}));
  return o.sort((a,b)=>b.s.localeCompare(a.s))}
 function rowHtml(o,A){const r=o.r;let d,t,det,c='';
- if(o.k==='malaise'){d=fr(r.date);t=`<span class="tag ${esc(r.type)}">${esc(TYL[r.type]||'?')}</span>`;det=esc([r.crise?'Crise généralisée'+(r.duree>0?' ('+fmtDur(r.duree)+')':''):'',...(r.signes||[]),r.notes].filter(Boolean).join(', '));c=cycleInfo(dn(r.date),A)}
+ if(o.k==='malaise'){d=fr(r.date);t=`<span class="tag ${esc(r.type)}">${esc(TYL[r.type]||'?')}</span>`;det=esc([r.type==='generalisee'&&r.duree>0?'Durée '+fmtDur(r.duree):'',...(r.signes||[]),r.notes].filter(Boolean).join(', '));c=cycleInfo(dn(r.date),A)}
  else if(o.k==='regle'){d=fr(r.debut)+' → '+(r.fin?fr(r.fin):'en cours');t='<span class="tag rg">Règles</span>';det=r.fin&&dn(r.fin)!=null?(dn(r.fin)-dn(r.debut)+1)+' jours':''}
  else if(o.k==='monte'){d=fr(r.date);t='<span class="tag mt">Monté</span>';det=esc([...(r.signes||[]),r.notes].filter(Boolean).join(', '));c=cycleInfo(dn(r.date),A)}
  else if(o.k==='valium'){d=fr(r.date);t='<span class="tag vl">Valium</span>';det=esc([r.dose!=null?String(r.dose).replace('.',',')+' mg':'',r.notes].filter(Boolean).join(' · '));c=cycleInfo(dn(r.date),A)}
@@ -239,14 +242,13 @@ function newRec(k){const id=crypto.randomUUID();
 function openForm(kind,rec){cur={kind,isNew:!rec,rec:rec?JSON.parse(JSON.stringify(rec)):newRec(kind)};renderForm();showView('form')}
 function renderForm(){const{kind,rec,isNew}=cur;let h='';
  if(kind==='malaise'){
-  h+=`<h2>${isNew?'Nouveau malaise':'Modifier le malaise'}</h2><label>Type</label><div class="chips">${['conscient','inconscient'].map(t=>`<button type="button" class="chip big${rec.type===t?' on':''}" data-ty="${t}">${TYL[t]}</button>`).join('')}</div>`;
+  h+=`<h2>${isNew?'Nouveau malaise':'Modifier le malaise'}</h2><label>Type</label><div class="chips">${['conscient','inconscient','generalisee'].map(t=>`<button type="button" class="chip big${rec.type===t?' on':''}" data-ty="${t}">${TYL[t]}</button>`).join('')}</div>`;
   h+=`<label for="f-date">Date et heure</label><input id="f-date" data-f="date" type="datetime-local" value="${esc(rec.date)}">`;
   if(rec.type){const sg=rec.signes||[],ck=s=>`<label class="ck"><input type="checkbox" data-sg="${esc(s)}"${sg.includes(s)?' checked':''}> ${esc(s)}</label>`,
-   groups=rec.type==='inconscient'?[['Signes inconscients (facultatif)',SIGNS.inconscient],['Signes conscients, avant ou pendant (facultatif)',SIGNS.conscient]]:[['Signes (facultatif)',SIGNS.conscient]],
+   groups=rec.type!=='conscient'?[['Signes inconscients (facultatif)',SIGNS.inconscient],['Signes conscients, avant ou pendant (facultatif)',SIGNS.conscient]]:[['Signes (facultatif)',SIGNS.conscient]],
    known=[...SIGNS.conscient,...SIGNS.inconscient],extra=sg.filter(s=>!known.includes(s));
    h+=groups.map(([t,l])=>`<label>${t}</label>`+l.map(ck).join('')).join('')+extra.map(ck).join('')}
-  if(rec.type==='inconscient'){h+=`<label class="ck" style="margin-top:12px"><input type="checkbox" data-cr${rec.crise?' checked':''}> <b>Crise généralisée</b></label>`;
-   if(rec.crise){const du=+rec.duree||0;h+=`<label>Durée de l’inconscience (facultatif)</label><div class="bar" style="margin-top:0"><input id="f-dm" type="number" inputmode="numeric" min="0" placeholder="minutes" value="${du?Math.floor(du/60):''}"><input id="f-ds" type="number" inputmode="numeric" min="0" placeholder="secondes" value="${du?du%60:''}"></div>`}}
+  if(rec.type==='generalisee'){const du=+rec.duree||0;h+=`<label>Durée de l’inconscience (facultatif)</label><div class="bar" style="margin-top:0"><input id="f-dm" type="number" inputmode="numeric" min="0" placeholder="minutes" value="${du?Math.floor(du/60):''}"><input id="f-ds" type="number" inputmode="numeric" min="0" placeholder="secondes" value="${du?du%60:''}"></div>`}
   h+=`<label for="f-notes">Autre / notes</label><input id="f-notes" data-f="notes" value="${esc(rec.notes)}">`}
  else if(kind==='regle'){
   h+=`<h2>${isNew?'Nouvelles règles':'Modifier les règles'}</h2><label for="f-debut">Premier jour</label><input id="f-debut" data-f="debut" type="date" value="${esc(rec.debut)}">`;
@@ -278,21 +280,20 @@ const onField=e=>{const t=e.target;if(t.dataset&&t.dataset.f){cur.rec[t.dataset.
  if(t.id==='f-dm'||t.id==='f-ds'){cur.rec.duree=(parseInt($('#f-dm').value)||0)*60+(parseInt($('#f-ds').value)||0);saveDraft()}};
 $('#v-form').addEventListener('input',onField);
 $('#v-form').addEventListener('change',e=>{onField(e);const t=e.target;
- if(t.dataset&&t.dataset.cr!==undefined){cur.rec.crise=t.checked;if(!t.checked)delete cur.rec.duree;renderForm();saveDraft();return}
  if(t.dataset&&t.dataset.sg!==undefined){const a=cur.rec.signes=cur.rec.signes||[],s=t.dataset.sg,i=a.indexOf(s);
   if(t.checked){if(i<0)a.push(s)}else if(i>=0)a.splice(i,1);saveDraft()}});
 $('#v-form').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
- if(b.dataset.ty){cur.rec.type=b.dataset.ty;if(b.dataset.ty!=='inconscient'){delete cur.rec.crise;delete cur.rec.duree}const ok=b.dataset.ty==='inconscient'?[...SIGNS.inconscient,...SIGNS.conscient]:SIGNS.conscient;cur.rec.signes=(cur.rec.signes||[]).filter(s=>ok.includes(s));renderForm();saveDraft();return}
+ if(b.dataset.ty){cur.rec.type=b.dataset.ty;delete cur.rec.crise;if(b.dataset.ty!=='generalisee')delete cur.rec.duree;const ok=b.dataset.ty!=='conscient'?[...SIGNS.inconscient,...SIGNS.conscient]:SIGNS.conscient;cur.rec.signes=(cur.rec.signes||[]).filter(s=>ok.includes(s));renderForm();saveDraft();return}
  if(b.id==='f-ok')submit();
  else if(b.id==='f-cancel'){lsDel('draft');showView('data')}
  else if(b.id==='f-dup')dup();
  else if(b.id==='f-del')del()});
 async function submit(){const{kind}=cur,r={...cur.rec};let err='';
  if(kind==='malaise'){
-  if(!r.type)err='Choisis conscient ou inconscient';
+  if(!r.type)err='Choisis le type de malaise';
   else if(dn(r.date)==null||!/T\d\d:\d\d/.test(r.date))err='La date et l’heure sont obligatoires';
   r.notes=(r.notes||'').trim();if(!r.notes)delete r.notes;if(!r.signes||!r.signes.length)delete r.signes;
-  if(r.type!=='inconscient'||!r.crise){delete r.crise;delete r.duree}else{r.crise=true;if(!(r.duree>0))delete r.duree}}
+  delete r.crise;if(r.type!=='generalisee'||!(r.duree>0))delete r.duree}
  else if(kind==='monte'){
   if(dn(r.date)==null||!/T\d\d:\d\d/.test(r.date))err='La date et l’heure sont obligatoires';
   r.notes=(r.notes||'').trim();if(!r.notes)delete r.notes;if(!r.signes||!r.signes.length)delete r.signes}
@@ -323,16 +324,16 @@ const ml=k=>{const[y,m]=k.split('-');return MO[m-1]+' '+y};
 function renderStats(){const A=analyse(),W=A.W;let h=settingsCard();
  if(!A.M.length){$('#v-stats').innerHTML=h+'<p class="empty">Aucun malaise enregistré pour l’instant.</p>';return}
  const mr=monthRows(A).reverse(),sum=k=>mr.reduce((a,r)=>a+r[k],0);
- h+=card('Malaises par mois',tb(['Mois','Total','Conscients','Inconscients','Généralisées','Montés','Valium'],[...mr.map(r=>tr([ml(r.k),r.t,r.c,r.i,r.g,r.q,r.v])),tr(['<b>Total</b>',`<b>${sum('t')}</b>`,`<b>${sum('c')}</b>`,`<b>${sum('i')}</b>`,`<b>${sum('g')}</b>`,`<b>${sum('q')}</b>`,`<b>${sum('v')}</b>`])])+'<p class="hint">« Généralisées » = crises généralisées, déjà comprises dans les inconscients. Les « Montés » (débuts de malaise qui n’évoluent pas) ne sont pas comptés dans les malaises.</p>');
+ h+=card('Malaises par mois',tb(['Mois','Total','Conscients','Inconscients','Généralisées','Montés','Valium'],[...mr.map(r=>tr([ml(r.k),r.t,r.c,r.i,r.g,r.q,r.v])),tr(['<b>Total</b>',`<b>${sum('t')}</b>`,`<b>${sum('c')}</b>`,`<b>${sum('i')}</b>`,`<b>${sum('g')}</b>`,`<b>${sum('q')}</b>`,`<b>${sum('v')}</b>`])])+'<p class="hint">Le total regroupe les trois types de malaise. Les « Montés » (débuts de malaise qui n’évoluent pas) ne sont pas comptés dans les malaises.</p>');
  const wr=mr.map(r=>{const b=[0,0,0,0,0];
   A.M.forEach(m=>{if(sf!=='all'&&m.ty!==sf)return;const s=dstr(m.n);if(s.slice(0,7)!==r.k)return;b[Math.min(4,Math.floor((+s.slice(8,10)-1)/7))]++});
   return tr([ml(r.k),...b,b.reduce((a,x)=>a+x,0)])});
- h+=card('Malaises par semaine du mois',`<select id="sf">${[['all','Tous les malaises'],['conscient','Conscients'],['inconscient','Inconscients']].map(([v,l])=>`<option value="${v}"${sf===v?' selected':''}>${l}</option>`).join('')}</select><div style="height:8px"></div>`+tb(['Mois','1–7','8–14','15–21','22–28','29+','Total'],wr)+'<p class="hint">Semaines du mois : jours 1–7, 8–14, 15–21, 22–28, puis 29 jusqu’à la fin du mois.</p>');
+ h+=card('Malaises par semaine du mois',`<select id="sf">${[['all','Tous les malaises'],['conscient','Conscients'],['inconscient','Inconscients'],['generalisee','Crises généralisées']].map(([v,l])=>`<option value="${v}"${sf===v?' selected':''}>${l}</option>`).join('')}</select><div style="height:8px"></div>`+tb(['Mois','1–7','8–14','15–21','22–28','29+','Total'],wr)+'<p class="hint">Semaines du mois : jours 1–7, 8–14, 15–21, 22–28, puis 29 jusqu’à la fin du mois.</p>');
  const ps=phaseStats(A);
  if(!ps)h+=card('Malaises et règles','<p class="empty">Ajoute au moins une période de règles pour voir ce tableau.</p>');
- else{const C=ps.C,rt=(n,d)=>d?f1(n/d*10):'—',rowP=(l,o)=>tr([l,o.d,o.t,rt(o.t,o.d),`${o.c} (${rt(o.c,o.d)})`,`${o.i} (${rt(o.i,o.d)})`,`${o.v} (${rt(o.v,o.d)})`,`${o.q} (${rt(o.q,o.d)})`]),
+ else{const C=ps.C,rt=(n,d)=>d?f1(n/d*10):'—',rowP=(l,o)=>tr([l,o.d,o.t,rt(o.t,o.d),`${o.c} (${rt(o.c,o.d)})`,`${o.i} (${rt(o.i,o.d)})`,`${o.g} (${rt(o.g,o.d)})`,`${o.v} (${rt(o.v,o.d)})`,`${o.q} (${rt(o.q,o.d)})`]),
   add=(a,b)=>({d:a.d+b.d,t:a.t+b.t,c:a.c+b.c,i:a.i+b.i,v:a.v+b.v,q:a.q+b.q,g:a.g+b.g}),hors=add(add(C.pre,C.post),C.aut),tot=add(C.reg,hors);
-  h+=card('Malaises et règles',tb(['Période','Jours','Malaises','Par 10 j','Conscients (par 10 j)','Inconscients (par 10 j)','Valium (par 10 j)','Montés (par 10 j)'],[
+  h+=card('Malaises et règles',tb(['Période','Jours','Malaises','Par 10 j','Conscients (par 10 j)','Inconscients (par 10 j)','Généralisées (par 10 j)','Valium (par 10 j)','Montés (par 10 j)'],[
    rowP('Pendant les règles',C.reg),rowP(`${W} j avant les règles`,C.pre),rowP(`${W} j après les règles`,C.post),rowP('Reste du cycle',C.aut),rowP('<b>Hors règles</b>',hors),rowP('<b>Total</b>',tot)])
    +`<p class="hint">« Par 10 j » = nombre de malaises ramené à 10 jours, pour comparer des périodes de durées différentes. Suivi calculé depuis le début de la première période de règles saisie${ps.before?` (${ps.before} malaise(s) plus ancien(s) non compté(s))`:''}.</p>`)}
 
@@ -340,14 +341,12 @@ function renderStats(){const A=analyse(),W=A.W;let h=settingsCard();
  if(!G.length)h+=card('Crises généralisées','<p class="empty">Aucune crise généralisée enregistrée.</p>');
  else{const avg=du.length?du.reduce((a,x)=>a+x,0)/du.length:0;
   let cb=tb(['Crises','Avec durée','Durée moyenne','Plus courte','Plus longue'],[tr([G.length,du.length,fmtDur(avg),du.length?fmtDur(Math.min(...du)):'—',du.length?fmtDur(Math.max(...du)):'—'])]);
-  if(ps){const C=ps.C,ad=(a,b)=>({d:a.d+b.d,g:a.g+b.g}),hr=ad(ad(C.pre,C.post),C.aut),tt=ad(C.reg,hr),rg=(l,o)=>tr([l,o.d,o.g,o.d?f1(o.g/o.d*10):'—']);
-   cb+='<div style="height:8px"></div>'+tb(['Période','Jours','Crises','Par 10 j'],[rg('Pendant les règles',C.reg),rg(`${W} j avant les règles`,C.pre),rg(`${W} j après les règles`,C.post),rg('Reste du cycle',C.aut),rg('<b>Hors règles</b>',hr),rg('<b>Total</b>',tt)])}
   h+=card('Crises généralisées',cb)}
  const vs=valStats(A);
  if(!vs)h+=card('Valium et malaises','<p class="empty">Aucune prise de Valium enregistrée.</p>');
- else{const rt=(n,d)=>d>0?f1(n/d*10):'—',row=(l,o,hr)=>{const d=hr/24;return tr([l,f1(d),o.t,rt(o.t,d),`${o.c} (${rt(o.c,d)})`,`${o.i} (${rt(o.i,d)})`,`${o.q} (${rt(o.q,d)})`])},
-   tot={t:vs.inP.t+vs.outM.t,c:vs.inP.c+vs.outM.c,i:vs.inP.i+vs.outM.i,q:vs.qi+vs.qo};
-  h+=card('Valium et malaises',tb(['Période','Jours','Malaises','Par 10 j','Conscients (par 10 j)','Inconscients (par 10 j)','Montés (par 10 j)'],[row(`${A.H} h après une prise`,vs.inP,vs.cov),row('Hors de ces périodes',vs.outM,vs.out),row('<b>Total</b>',tot,vs.cov+vs.out)])
+ else{const rt=(n,d)=>d>0?f1(n/d*10):'—',row=(l,o,hr)=>{const d=hr/24;return tr([l,f1(d),o.t,rt(o.t,d),`${o.c} (${rt(o.c,d)})`,`${o.i} (${rt(o.i,d)})`,`${o.g} (${rt(o.g,d)})`,`${o.q} (${rt(o.q,d)})`])},
+   tot={t:vs.inP.t+vs.outM.t,c:vs.inP.c+vs.outM.c,i:vs.inP.i+vs.outM.i,g:vs.inP.g+vs.outM.g,q:vs.qi+vs.qo};
+  h+=card('Valium et malaises',tb(['Période','Jours','Malaises','Par 10 j','Conscients (par 10 j)','Inconscients (par 10 j)','Généralisées (par 10 j)','Montés (par 10 j)'],[row(`${A.H} h après une prise`,vs.inP,vs.cov),row('Hors de ces périodes',vs.outM,vs.out),row('<b>Total</b>',tot,vs.cov+vs.out)])
    +`<p class="hint">${vs.n} prise(s) depuis le ${fr(dstr(vs.first))} (comparaison calculée à partir de ce jour). ${vs.fol} malaise(s) sur ${vs.seen} ont été suivis d’une prise dans les ${A.H} h. Une prise peut aussi être une réaction à un malaise ou à ses signes avant-coureurs : à interpréter avec prudence.</p>`)}
  const es=evStats(A);
  h+=card('Corrélation avec les évènements',es.length?tb(['Évènement','Fois','Jours couverts','Malaises','Par 10 j','Hors évènement (par 10 j)'],es.map(x=>tr([esc(x.lib),x.fois,x.d,x.t,f1(x.r),f1(x.ro)])))
@@ -368,6 +367,8 @@ const svgW=(w,H,s)=>`<svg width="${w}" height="${H}" viewBox="0 0 ${w} ${H}" rol
 function yAx(max,top,h,L,w,R,steps,lab){const st=steps?(steps.find(x=>x>=max/4)||Math.ceil(max/4)):Math.max(1,Math.ceil(max/4)),mx=Math.ceil(max/st)*st;let s='';
  for(let v=0;v<=mx;v+=st){const y=top+h-v/mx*h;s+=`<line class="ax" x1="${L}" x2="${w-R}" y1="${y}" y2="${y}"/><text class="tx" x="${L-6}" y="${y+4}" text-anchor="end">${lab?lab(v):v}</text>`}
  return{svg:s,Y:v=>top+h-v/mx*h}}
+const SEG=[['c','c1','conscient(s)'],['i','c2','inconscient(s)'],['g','c3','crise(s) généralisée(s)']];
+function stack(r,x,b,ya,lb){let acc=0,s='';for(const[k,cl,nm]of SEG){const v=r[k]||0;if(!v)continue;const y1=ya.Y(acc),y2=ya.Y(acc+v);s+=`<rect class="${cl}" x="${x}" y="${y2}" width="${b}" height="${y1-y2}"><title>${lb} : ${v} ${nm}</title></rect>`;acc+=v}return s}
 function grid(x0,x1,X,top,bot){const ticks=[];let d=new Date(Date.UTC(...dstr(x0).split('-').map((v,i)=>i===1?v-1:+v)));d=new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),1));
  for(;;){const n=Math.round(d.getTime()/864e5);if(n>x1)break;if(n>=x0)ticks.push({n,m:d.getUTCMonth(),y:d.getUTCFullYear()});d=new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth()+1,1))}
  const sp=(x1-x0)/30,k=sp>30?6:sp>14?3:sp>7?2:1;let s='';
@@ -376,56 +377,54 @@ function grid(x0,x1,X,top,bot){const ticks=[];let d=new Date(Date.UTC(...dstr(x0
  return s}
 function bands(A,X,top,h){return A.R.filter(r=>r.e>=A.x0&&r.d<A.x1).map(r=>{const a=X(Math.max(r.d,A.x0)),b=X(Math.min(r.e+1,A.x1));
  return `<rect class="rg" x="${a}" y="${top}" width="${Math.max(2,b-a)}" height="${h}"><title>Règles ${fr(dstr(r.d))} → ${r.open?'en cours':fr(dstr(r.e))}</title></rect>`}).join('')}
-function chTimeline(A,w){const L=84,R=10,top=8,x0=A.x0,x1=A.x1,X=n=>L+(n-x0)/(x1-x0)*(w-L-R),yC=top+48+20,yI=yC+36,yM=yI+30,yV=yM+30,bot=yV+22,H=bot+26;
+function chTimeline(A,w){const L=84,R=10,top=8,x0=A.x0,x1=A.x1,X=n=>L+(n-x0)/(x1-x0)*(w-L-R),yC=top+48+20,yI=yC+36,yG=yI+34,yM=yG+30,yV=yM+30,bot=yV+22,H=bot+26;
  let s=`<clipPath id="cpT"><rect x="${L}" y="0" width="${w-L-R}" height="${H}"/></clipPath>`+bands(A,X,top,bot-top)+grid(x0,x1,X,top,bot);
- s+=`<text class="tx" x="4" y="${top+12}">Évènements</text><text class="tx" x="4" y="${yC+4}">Conscients</text><text class="tx" x="4" y="${yI+4}">Inconscients</text><text class="tx" x="4" y="${yM+4}">Montés</text><text class="tx" x="4" y="${yV+4}">Valium</text><g clip-path="url(#cpT)">`;
+ s+=`<text class="tx" x="4" y="${top+12}">Évènements</text><text class="tx" x="4" y="${yC+4}">Conscients</text><text class="tx" x="4" y="${yI+4}">Inconscients</text><text class="tx" x="4" y="${yG+4}">Généralisées</text><text class="tx" x="4" y="${yM+4}">Montés</text><text class="tx" x="4" y="${yV+4}">Valium</text><g clip-path="url(#cpT)">`;
  A.E.forEach((e,i)=>{if(e.f<x0||e.s>=x1)return;const y=top+(i%3)*16,xs=X(Math.max(e.s,x0)),xe=X(Math.min(e.f+1,x1)),rg=e.f>e.s,
    t=`${e.lib} (${fr(dstr(e.s))}${rg?' → '+fr(dstr(e.f)):''})`,lab=esc(e.lib.length>16?e.lib.slice(0,15)+'…':e.lib);
   s+=rg?`<rect class="ev" x="${xs}" y="${y+2}" width="${Math.max(3,xe-xs)}" height="8" rx="3"><title>${esc(t)}</title></rect>`:`<path class="ev" d="M${X(e.s+.5)} ${y+1}l5 5l-5 5l-5-5z"><title>${esc(t)}</title></path>`;
   const ax=rg?xe+4:X(e.s+.5)+8,flip=ax>w-100;
   s+=`<text class="tx sm" x="${flip?(rg?xs-4:X(e.s+.5)-8):ax}" y="${y+10}" text-anchor="${flip?'end':'start'}">${lab}</text>`});
  const cnt={};
- A.M.forEach(m=>{if(m.n<x0||m.n>=x1)return;const k=m.n+'|'+m.ty,c=cnt[k]=(cnt[k]||0)+1,cy=(m.ty==='conscient'?yC:yI)-(c-1)*7;
-  s+=`<circle class="${m.ty==='conscient'?'c1':'c2'} pt" cx="${X(m.n+.5)}" cy="${cy}" r="${m.g?8:5}"><title>${fr(m.t)} · ${esc(TYL[m.ty]||'')}${m.g?' · crise généralisée'+(m.du>0?' ('+fmtDur(m.du)+')':''):''}${m.s.length?' · '+esc(m.s.join(', ')):''}</title></circle>`});
+ A.M.forEach(m=>{if(m.n<x0||m.n>=x1)return;const k=m.n+'|'+m.ty,c=cnt[k]=(cnt[k]||0)+1,cy=({conscient:yC,generalisee:yG}[m.ty]||yI)-(c-1)*7;
+  s+=`<circle class="${({conscient:'c1',generalisee:'c3'}[m.ty]||'c2')} pt" cx="${X(m.n+.5)}" cy="${cy}" r="5"><title>${fr(m.t)} · ${esc(TYL[m.ty]||'')}${m.g&&m.du>0?' · '+fmtDur(m.du):''}${m.s.length?' · '+esc(m.s.join(', ')):''}</title></circle>`});
  A.MT.forEach(p=>{if(p.n<x0||p.n>=x1)return;s+=`<circle class="mt pt" cx="${X(p.n+.5)}" cy="${yM}" r="4"><title>${fr(p.t)} · Monté${p.s.length?' · '+esc(p.s.join(', ')):''}</title></circle>`});
  A.V.forEach(p=>{if(p.n<x0||p.n>=x1)return;const x=X(p.n+.5);s+=`<path class="vl pt" d="M${x} ${yV-6}l6 11h-12z"><title>${fr(p.t)} · Valium${p.dose!=null?' '+String(p.dose).replace('.',',')+' mg':''}</title></path>`});
  s+=`<line class="td" x1="${X(A.T+.5)}" x2="${X(A.T+.5)}" y1="${top}" y2="${bot}"/></g>`;
  return svgW(w,H,s)}
 function chWeeks(A,w){const L=34,R=10,top=12,h=150,H=top+h+30,x0=A.x0,x1=A.x1,X=n=>L+(n-x0)/(x1-x0)*(w-L-R),wk={};
- A.M.forEach(m=>{if(m.n<x0||m.n>=x1)return;const ws=m.n-((m.n+3)%7),o=wk[ws]=wk[ws]||{c:0,i:0};m.ty==='conscient'?o.c++:o.i++});
- const ya=yAx(Math.max(1,...Object.values(wk).map(o=>Math.max(o.c,o.i))),top,h,L,w,R),keys=[];
+ A.M.forEach(m=>{if(m.n<x0||m.n>=x1)return;const ws=m.n-((m.n+3)%7),o=wk[ws]=wk[ws]||{c:0,i:0,g:0};o[tk(m)]++});
+ const ya=yAx(Math.max(1,...Object.values(wk).map(o=>Math.max(o.c,o.i,o.g))),top,h,L,w,R),keys=[];
  for(let ws=x0-((x0+3)%7);ws<x1;ws+=7)keys.push(ws);
- const pts=t=>keys.map(k=>`${X(k+3.5).toFixed(1)},${ya.Y((wk[k]||{c:0,i:0})[t]).toFixed(1)}`).join(' ');
- let s=`<clipPath id="cpW"><rect x="${L}" y="0" width="${w-L-R}" height="${H}"/></clipPath>`+bands(A,X,top,h)+ya.svg+grid(x0,x1,X,top,top+h)+`<g clip-path="url(#cpW)"><polyline class="ln1" points="${pts('c')}"/><polyline class="ln2" points="${pts('i')}"/>`;
+ const pts=t=>keys.map(k=>`${X(k+3.5).toFixed(1)},${ya.Y((wk[k]||{c:0,i:0,g:0})[t]).toFixed(1)}`).join(' ');
+ let s=`<clipPath id="cpW"><rect x="${L}" y="0" width="${w-L-R}" height="${H}"/></clipPath>`+bands(A,X,top,h)+ya.svg+grid(x0,x1,X,top,top+h)+`<g clip-path="url(#cpW)"><polyline class="ln1" points="${pts('c')}"/><polyline class="ln2" points="${pts('i')}"/><polyline class="ln3" points="${pts('g')}"/>`;
  keys.forEach(k=>{const o=wk[k];if(!o)return;
   if(o.c)s+=`<circle class="c1 pt" cx="${X(k+3.5)}" cy="${ya.Y(o.c)}" r="4"><title>Semaine du ${fr(dstr(k))} : ${o.c} conscient(s)</title></circle>`;
-  if(o.i)s+=`<circle class="c2 pt" cx="${X(k+3.5)}" cy="${ya.Y(o.i)}" r="4"><title>Semaine du ${fr(dstr(k))} : ${o.i} inconscient(s)</title></circle>`});
+  if(o.i)s+=`<circle class="c2 pt" cx="${X(k+3.5)}" cy="${ya.Y(o.i)}" r="4"><title>Semaine du ${fr(dstr(k))} : ${o.i} inconscient(s)</title></circle>`;
+  if(o.g)s+=`<circle class="c3 pt" cx="${X(k+3.5)}" cy="${ya.Y(o.g)}" r="4"><title>Semaine du ${fr(dstr(k))} : ${o.g} crise(s) généralisée(s)</title></circle>`});
  return svgW(w,H,s+'</g>')}
 function chMonths(A,w){const rows=monthRows(A).slice(-24);if(!rows.length)return'<p class="empty">Pas encore de données.</p>';
  const L=34,R=8,top=16,h=170,H=top+h+34,ya=yAx(Math.max(1,...rows.map(r=>r.t)),top,h,L,w,R),bw=(w-L-R)/rows.length;let s=ya.svg;
- rows.forEach((r,i)=>{const x=L+i*bw+bw*.15,b=bw*.7,y0=ya.Y(0),yc=ya.Y(r.c),yt=ya.Y(r.c+r.i),[y,m]=r.k.split('-');
-  if(r.c)s+=`<rect class="c1" x="${x}" y="${yc}" width="${b}" height="${y0-yc}"><title>${ml(r.k)} : ${r.c} conscient(s)</title></rect>`;
-  if(r.i)s+=`<rect class="c2" x="${x}" y="${yt}" width="${b}" height="${yc-yt}"><title>${ml(r.k)} : ${r.i} inconscient(s)</title></rect>`;
+ rows.forEach((r,i)=>{const x=L+i*bw+bw*.15,b=bw*.7,yt=ya.Y(r.t),[y,m]=r.k.split('-');
+  s+=stack(r,x,b,ya,ml(r.k));
   if(r.t)s+=`<text class="tx" x="${x+b/2}" y="${yt-3}" text-anchor="middle">${r.t}</text>`;
   if(rows.length<=12||i%2===0){s+=`<text class="tx" x="${x+b/2}" y="${top+h+14}" text-anchor="middle">${MO[m-1]}</text>`;if(m==='01'||i===0)s+=`<text class="tx" x="${x+b/2}" y="${top+h+27}" text-anchor="middle">${y}</text>`}});
  return svgW(w,H,s)}
-function chCycle(A,w){const NB=36,rows=Array.from({length:NB},()=>({c:0,i:0}));let tot=0;
- A.M.forEach(m=>{let last=null;for(const r of A.R)if(r.d<=m.n)last=r;if(!last)return;const b=Math.min(m.n-last.d+1,NB)-1;m.ty==='conscient'?rows[b].c++:rows[b].i++;tot++});
+function chCycle(A,w){const NB=36,rows=Array.from({length:NB},()=>({c:0,i:0,g:0}));let tot=0;
+ A.M.forEach(m=>{let last=null;for(const r of A.R)if(r.d<=m.n)last=r;if(!last)return;const b=Math.min(m.n-last.d+1,NB)-1;rows[b][tk(m)]++;tot++});
  if(!tot)return'<p class="empty">Aucun malaise après le début d’une période de règles.</p>';
- const L=34,R=8,top=16,h=150,H=top+h+30,ya=yAx(Math.max(1,...rows.map(r=>r.c+r.i)),top,h,L,w,R),bw=(w-L-R)/NB,cl=A.R.filter(r=>!r.open),
+ const L=34,R=8,top=16,h=150,H=top+h+30,ya=yAx(Math.max(1,...rows.map(tot3)),top,h,L,w,R),bw=(w-L-R)/NB,cl=A.R.filter(r=>!r.open),
   len=cl.length?Math.round(cl.reduce((a,r)=>a+r.e-r.d+1,0)/cl.length):5;
  let s=`<rect class="rg" x="${L}" y="${top}" width="${bw*len}" height="${h}"><title>Durée moyenne des règles : ${len} j</title></rect>`+ya.svg;
- rows.forEach((r,b)=>{const x=L+b*bw+bw*.12,bi=bw*.76,y0=ya.Y(0),yc=ya.Y(r.c),yt=ya.Y(r.c+r.i),lb=b===NB-1?'36 j et +':'J'+(b+1);
-  if(r.c)s+=`<rect class="c1" x="${x}" y="${yc}" width="${bi}" height="${y0-yc}"><title>${lb} : ${r.c} conscient(s)</title></rect>`;
-  if(r.i)s+=`<rect class="c2" x="${x}" y="${yt}" width="${bi}" height="${yc-yt}"><title>${lb} : ${r.i} inconscient(s)</title></rect>`;
+ rows.forEach((r,b)=>{const x=L+b*bw+bw*.12,bi=bw*.76,lb=b===NB-1?'36 j et +':'J'+(b+1);
+  s+=stack(r,x,bi,ya,lb);
   const d=b+1;if(d===1||(d%5===0&&d<=30)||d===NB)s+=`<text class="tx" x="${x+bi/2}" y="${top+h+14}" text-anchor="middle">${d===NB?'36+':d}</text>`});
  s+=`<text class="tx" x="${L+(w-L-R)/2}" y="${top+h+27}" text-anchor="middle">Jour du cycle (J1 = premier jour des règles)</text>`;
  return svgW(w,H,s)}
-function chBars(rows,w,cap){const L=34,R=8,top=16,h=150,H=top+h+(cap?36:22),ya=yAx(Math.max(1,...rows.map(r=>r.c+r.i)),top,h,L,w,R),bw=(w-L-R)/rows.length;let s=ya.svg;
- rows.forEach((r,k)=>{const x=L+k*bw+bw*.15,b=bw*.7,y0=ya.Y(0),yc=ya.Y(r.c),yt=ya.Y(r.c+r.i);
-  if(r.c)s+=`<rect class="c1" x="${x}" y="${yc}" width="${b}" height="${y0-yc}"><title>${r.t} : ${r.c} conscient(s)</title></rect>`;
-  if(r.i)s+=`<rect class="c2" x="${x}" y="${yt}" width="${b}" height="${yc-yt}"><title>${r.t} : ${r.i} inconscient(s)</title></rect>`;
-  if(r.c+r.i)s+=`<text class="tx" x="${x+b/2}" y="${yt-3}" text-anchor="middle">${r.c+r.i}</text>`;
+function chBars(rows,w,cap){const L=34,R=8,top=16,h=150,H=top+h+(cap?36:22),ya=yAx(Math.max(1,...rows.map(tot3)),top,h,L,w,R),bw=(w-L-R)/rows.length;let s=ya.svg;
+ rows.forEach((r,k)=>{const x=L+k*bw+bw*.15,b=bw*.7,yt=ya.Y(tot3(r));
+  s+=stack(r,x,b,ya,r.t);
+  if(tot3(r))s+=`<text class="tx" x="${x+b/2}" y="${yt-3}" text-anchor="middle">${tot3(r)}</text>`;
   s+=`<text class="tx" x="${x+b/2}" y="${top+h+14}" text-anchor="middle">${r.l}</text>`});
  if(cap)s+=`<text class="tx" x="${L+(w-L-R)/2}" y="${top+h+30}" text-anchor="middle">${cap}</text>`;
  return svgW(w,H,s)}
@@ -433,14 +432,14 @@ function chDur(A,w){const G=A.M.filter(m=>m.g&&m.du>0).slice(-24);if(!G.length)r
  const L=48,R=8,top=16,h=150,H=top+h+24,bw=(w-L-R)/G.length,ev=Math.ceil(G.length/8),
   ya=yAx(Math.max(...G.map(m=>m.du)),top,h,L,w,R,[5,10,15,30,60,120,300,600,900,1800,3600],v=>v%60===0?v/60+' min':v+' s');let s=ya.svg;
  G.forEach((m,k)=>{const x=L+k*bw+bw*.15,b=bw*.7,y=ya.Y(m.du);
-  s+=`<rect class="c2" x="${x}" y="${y}" width="${b}" height="${ya.Y(0)-y}"><title>${fr(m.t)} : ${fmtDur(m.du)}</title></rect>`;
+  s+=`<rect class="c3" x="${x}" y="${y}" width="${b}" height="${ya.Y(0)-y}"><title>${fr(m.t)} : ${fmtDur(m.du)}</title></rect>`;
   if(bw>=46)s+=`<text class="tx" x="${x+b/2}" y="${y-3}" text-anchor="middle">${fmtDur(m.du)}</text>`;
   if(k%ev===0)s+=`<text class="tx" x="${x+b/2}" y="${top+h+14}" text-anchor="middle">${fr(m.t).slice(0,5)}</text>`});
  return svgW(w,H,s)}
 function distCards(A,w){const DN=['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'],
- D=DN.map(n=>({c:0,i:0,l:n.slice(0,3),t:n})),Hh=Array.from({length:24},(_,k)=>({c:0,i:0,l:String(k),t:k+' h'}));
- A.M.forEach(m=>{const k=m.ty==='conscient'?'c':'i',hh=parseInt((m.t||'').slice(11,13));D[(m.n+3)%7][k]++;if(hh>=0&&hh<24)Hh[hh][k]++});
- const pk=(rows,f)=>{const mx=Math.max(0,...rows.map(r=>r.c+r.i));return mx?`${rows.map((r,k)=>r.c+r.i===mx?f(r,k):null).filter(x=>x!==null).join(', ')} (${mx} malaise${mx>1?'s':''})`:''},
+ D=DN.map(n=>({c:0,i:0,g:0,l:n.slice(0,3),t:n})),Hh=Array.from({length:24},(_,k)=>({c:0,i:0,g:0,l:String(k),t:k+' h'}));
+ A.M.forEach(m=>{const k=tk(m),hh=parseInt((m.t||'').slice(11,13));D[(m.n+3)%7][k]++;if(hh>=0&&hh<24)Hh[hh][k]++});
+ const pk=(rows,f)=>{const mx=Math.max(0,...rows.map(tot3));return mx?`${rows.map((r,k)=>tot3(r)===mx?f(r,k):null).filter(x=>x!==null).join(', ')} (${mx} malaise${mx>1?'s':''})`:''},
  a=pk(D,r=>r.t.toLowerCase()),b=pk(Hh,(r,k)=>k+' h');
  return card('Malaises par jour de la semaine',`<div class="cw">${chBars(D,w)}</div>${a?`<p class="hint">Jour le plus fréquent : ${a}. Tous les malaises enregistrés.</p>`:''}`)
   +card('Malaises selon l’heure',`<div class="cw">${chBars(Hh,w,'Heure de la journée')}</div>${b?`<p class="hint">Heure la plus fréquente : ${b}.</p>`:''}`)
@@ -449,7 +448,7 @@ function renderGraph(){const A=analyse(),el=$('#v-graph');
  if(!A.M.length&&!A.R.length){el.innerHTML='<p class="empty">Pas encore de données.</p>';return}
  const w=Math.max(el.clientWidth-26,560),x0=rng==='all'?Math.min(A.first,A.T-29):A.T-Math.round(+rng*30.4),B={...A,x0,x1:A.T+1};
  let h=`<div class="chips">${[['3','3 mois'],['6','6 mois'],['12','1 an'],['all','Tout']].map(([v,l])=>`<button class="chip${rng===v?' on':''}" data-r="${v}">${l}</button>`).join('')}</div>`;
- h+=`<div class="lg"><span><i class="sw c1"></i>Conscient</span><span><i class="sw c2"></i>Inconscient</span><span><i class="sw rg"></i>Règles</span><span><i class="sw ev"></i>Évènement</span><span>Gros point = crise généralisée</span><span><i class="sw mt"></i>Monté</span><span><i class="sw vl"></i>Valium</span></div>`;
+ h+=`<div class="lg"><span><i class="sw c1"></i>Conscient</span><span><i class="sw c2"></i>Inconscient</span><span><i class="sw rg"></i>Règles</span><span><i class="sw ev"></i>Évènement</span><span><i class="sw c3"></i>Crise généralisée</span><span><i class="sw mt"></i>Monté</span><span><i class="sw vl"></i>Valium</span></div>`;
  h+=card('Chronologie',`<div class="cw">${chTimeline(B,w)}</div>`)+card('Malaises par semaine',`<div class="cw">${chWeeks(B,w)}</div>`)
   +card('Malaises par mois',`<div class="cw">${chMonths(A,w)}</div>`)+card('Malaises selon le jour du cycle',`<div class="cw">${chCycle(A,w)}</div><p class="hint">Tous cycles confondus. La zone rose = durée moyenne des règles.</p>`)+distCards(A,w);
  el.innerHTML=h}

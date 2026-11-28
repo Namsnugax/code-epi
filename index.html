@@ -64,7 +64,7 @@ svg .tx{fill:var(--mut);font-size:11px}svg .sm{font-size:10px}
 <nav id="tabs"><button data-t="data" class="on">Données</button><button data-t="stats">Statistiques</button><button data-t="graph">Graphiques</button></nav>
 <main>
 <section id="v-data">
- <div class="adds"><button class="pri" id="a-mal">+ Malaise</button><button id="a-mon">+ Monté</button><button id="a-val">+ Valium</button><button id="a-evt">+ Évènement</button><button id="a-reg">+ Règles</button></div>
+ <div class="adds"><button class="pri" id="a-mal">+ Malaise</button><button id="a-mon">+ Montée</button><button id="a-val">+ Valium</button><button id="a-evt">+ Évènement</button><button id="a-reg">+ Règles</button></div>
  <div id="notes"></div>
  <div id="flt" class="chips"></div>
  <div class="tw"><table id="tbl"><thead><tr><th>Date</th><th>Type</th><th>Détails</th><th>Cycle</th></tr></thead><tbody id="tbody"></tbody></table></div>
@@ -216,12 +216,12 @@ function rowsAll(){const o=[];
 function rowHtml(o,A){const r=o.r;let d,t,det,c='';
  if(o.k==='malaise'){d=fr(r.date);t=`<span class="tag ${esc(r.type)}">${esc(TYL[r.type]||'?')}</span>`;det=esc([r.type==='generalisee'&&r.duree>0?'Durée '+fmtDur(r.duree):'',...(r.signes||[]),r.notes].filter(Boolean).join(', '));c=cycleInfo(dn(r.date),A)}
  else if(o.k==='regle'){d=fr(r.debut)+' → '+(r.fin?fr(r.fin):'en cours');t='<span class="tag rg">Règles</span>';det=r.fin&&dn(r.fin)!=null?(dn(r.fin)-dn(r.debut)+1)+' jours':''}
- else if(o.k==='monte'){d=fr(r.date);t='<span class="tag mt">Monté</span>';det=esc([...(r.signes||[]),r.notes].filter(Boolean).join(', '));c=cycleInfo(dn(r.date),A)}
+ else if(o.k==='monte'){d=fr(r.date);t='<span class="tag mt">Montée</span>';det=esc([...(r.signes||[]),r.notes].filter(Boolean).join(', '));c=cycleInfo(dn(r.date),A)}
  else if(o.k==='valium'){d=fr(r.date);t='<span class="tag vl">Valium</span>';det=esc([r.dose!=null?String(r.dose).replace('.',',')+' mg':'',r.notes].filter(Boolean).join(' · '));c=cycleInfo(dn(r.date),A)}
  else{d=fr(r.debut)+(r.fin?' → '+fr(r.fin):'');t='<span class="tag ev">Évènement</span>';det=esc(r.libelle)}
  return `<tr data-k="${o.k}" data-id="${esc(r.id)}"><td>${d}</td><td>${t}</td><td>${det}</td><td>${esc(c)}</td></tr>`}
 function renderData(){const A=analyse();
- $('#flt').innerHTML=[['all','Tout'],['malaise','Malaises'],['monte','Monté'],['valium','Valium'],['regle','Règles'],['evenement','Évènements']].map(([k,l])=>`<button class="chip${flt===k?' on':''}" data-k="${k}">${l}</button>`).join('');
+ $('#flt').innerHTML=[['all','Tout'],['malaise','Malaises'],['monte','Montée'],['valium','Valium'],['regle','Règles'],['evenement','Évènements']].map(([k,l])=>`<button class="chip${flt===k?' on':''}" data-k="${k}">${l}</button>`).join('');
  $('#tbody').innerHTML=rowsAll().filter(o=>flt==='all'||o.k===flt).map(o=>rowHtml(o,A)).join('')||'<tr><td colspan="4" class="empty">Aucune donnée.</td></tr>';
  let n='';if(loadErr)n+=`<div class="warn bad">${esc(loadErr)}</div>`;
  const op=A.R.filter(r=>r.open&&A.T-r.d>10);
@@ -255,7 +255,7 @@ function renderForm(){const{kind,rec,isNew}=cur;let h='';
   h+=`<label for="f-fin">Dernier jour (vide = en cours)</label><input id="f-fin" data-f="fin" type="date" value="${esc(rec.fin)}">`}
  else if(kind==='monte'){
   const sg=rec.signes||[],opts=[...SIGNS.conscient,...sg.filter(x=>!SIGNS.conscient.includes(x))];
-  h+=`<h2>${isNew?'Nouveau monté':'Modifier le monté'}</h2><p class="hint">Début de malaise qui n’a pas évolué.</p><label for="f-date">Date et heure</label><input id="f-date" data-f="date" type="datetime-local" max="${nowIn()}" value="${esc(rec.date)}">`;
+  h+=`<h2>${isNew?'Nouvelle montée':'Modifier la montée'}</h2><p class="hint">Début de malaise qui n’a pas évolué.</p><label for="f-date">Date et heure</label><input id="f-date" data-f="date" type="datetime-local" max="${nowIn()}" value="${esc(rec.date)}">`;
   h+=`<label>Signes (facultatif)</label>`+opts.map(x=>`<label class="ck"><input type="checkbox" data-sg="${esc(x)}"${sg.includes(x)?' checked':''}> ${esc(x)}</label>`).join('');
   h+=`<label for="f-notes">Autre / notes</label><input id="f-notes" data-f="notes" value="${esc(rec.notes)}">`}
  else if(kind==='valium'){
@@ -273,7 +273,7 @@ const lock=x=>document.querySelectorAll('#v-form button').forEach(b=>b.disabled=
 function saveDraft(){if(view!=='form'||!cur)return;try{lsSet('draft',JSON.stringify(cur))}catch(e){}}
 function restoreDraft(){let d;try{d=JSON.parse(lsGet('draft')||'null')}catch(e){}
  if(!d||!d.rec||!COL[d.kind])return;
- const l={malaise:'malaise',regle:'règles',evenement:'évènement',valium:'Valium',monte:'monté'}[d.kind];
+ const l={malaise:'malaise',regle:'règles',evenement:'évènement',valium:'Valium',monte:'montée'}[d.kind];
  if(!confirm('Reprendre le brouillon non enregistré ('+l+') ?')){lsDel('draft');return}
  cur=d;renderForm();showView('form')}
 const onField=e=>{const t=e.target;if(t.dataset&&t.dataset.f){cur.rec[t.dataset.f]=t.value;saveDraft()}
@@ -296,7 +296,7 @@ function findDup(kind,r){const others=data[COL[kind]].filter(x=>x.id!==r.id);
   const o=others.find(x=>{const c=dn(x.debut),d=x.fin?dn(x.fin):c;return norm(x.libelle)===l&&c!=null&&c<=b&&a<=d});
   return o?`Un évènement « ${o.libelle} » existe déjà à ces dates (${fr(o.debut)}${o.fin?' → '+fr(o.fin):''}).`:''}
  const t=hm(r.date),o=others.find(x=>{const u=hm(x.date);return u!=null&&Math.abs(u-t)*60<=10&&(kind!=='malaise'||x.type===r.type)});
- return o?`${{malaise:'Un malaise du même type est déjà enregistré',monte:'Un monté est déjà enregistré',valium:'Une prise de Valium est déjà enregistrée'}[kind]} le ${fr(o.date)} (à 10 minutes près).`:''}
+ return o?`${{malaise:'Un malaise du même type est déjà enregistré',monte:'Une montée est déjà enregistrée',valium:'Une prise de Valium est déjà enregistrée'}[kind]} le ${fr(o.date)} (à 10 minutes près).`:''}
 async function submit(){const{kind}=cur,r={...cur.rec};let err='';
  if(kind==='malaise'){
   if(!r.type)err='Choisis le type de malaise';
@@ -335,7 +335,7 @@ const ml=k=>{const[y,m]=k.split('-');return MO[m-1]+' '+y};
 function renderStats(){const A=analyse(),W=A.W;let h=settingsCard();
  if(!A.M.length){$('#v-stats').innerHTML=h+'<p class="empty">Aucun malaise enregistré pour l’instant.</p>';return}
  const mr=monthRows(A).reverse(),sum=k=>mr.reduce((a,r)=>a+r[k],0);
- h+=card('Malaises par mois',tb(['Mois','Total','Conscients','Inconscients','Généralisées','Montés','Valium'],[...mr.map(r=>tr([ml(r.k),r.t,r.c,r.i,r.g,r.q,r.v])),tr(['<b>Total</b>',`<b>${sum('t')}</b>`,`<b>${sum('c')}</b>`,`<b>${sum('i')}</b>`,`<b>${sum('g')}</b>`,`<b>${sum('q')}</b>`,`<b>${sum('v')}</b>`])])+'<p class="hint">Le total regroupe les trois types de malaise. Les « Montés » (débuts de malaise qui n’évoluent pas) ne sont pas comptés dans les malaises.</p>');
+ h+=card('Malaises par mois',tb(['Mois','Total','Conscients','Inconscients','Généralisées','Montées','Valium'],[...mr.map(r=>tr([ml(r.k),r.t,r.c,r.i,r.g,r.q,r.v])),tr(['<b>Total</b>',`<b>${sum('t')}</b>`,`<b>${sum('c')}</b>`,`<b>${sum('i')}</b>`,`<b>${sum('g')}</b>`,`<b>${sum('q')}</b>`,`<b>${sum('v')}</b>`])])+'<p class="hint">Le total regroupe les trois types de malaise. Les « Montées » (débuts de malaise qui n’évoluent pas) ne sont pas comptées dans les malaises.</p>');
  const wr=mr.map(r=>{const b=[0,0,0,0,0];
   A.M.forEach(m=>{if(sf!=='all'&&m.ty!==sf)return;const s=dstr(m.n);if(s.slice(0,7)!==r.k)return;b[Math.min(4,Math.floor((+s.slice(8,10)-1)/7))]++});
   return tr([ml(r.k),...b,b.reduce((a,x)=>a+x,0)])});
@@ -344,7 +344,7 @@ function renderStats(){const A=analyse(),W=A.W;let h=settingsCard();
  if(!ps)h+=card('Malaises et règles','<p class="empty">Ajoute au moins une période de règles pour voir ce tableau.</p>');
  else{const C=ps.C,rt=(n,d)=>d?f1(n/d*10):'—',rowP=(l,o)=>tr([l,o.d,o.t,rt(o.t,o.d),`${o.c} (${rt(o.c,o.d)})`,`${o.i} (${rt(o.i,o.d)})`,`${o.g} (${rt(o.g,o.d)})`,`${o.v} (${rt(o.v,o.d)})`,`${o.q} (${rt(o.q,o.d)})`]),
   add=(a,b)=>({d:a.d+b.d,t:a.t+b.t,c:a.c+b.c,i:a.i+b.i,v:a.v+b.v,q:a.q+b.q,g:a.g+b.g}),hors=add(add(C.pre,C.post),C.aut),tot=add(C.reg,hors);
-  h+=card('Malaises et règles',tb(['Période','Jours','Malaises','Par 10 j','Conscients (par 10 j)','Inconscients (par 10 j)','Généralisées (par 10 j)','Valium (par 10 j)','Montés (par 10 j)'],[
+  h+=card('Malaises et règles',tb(['Période','Jours','Malaises','Par 10 j','Conscients (par 10 j)','Inconscients (par 10 j)','Généralisées (par 10 j)','Valium (par 10 j)','Montées (par 10 j)'],[
    rowP('Pendant les règles',C.reg),rowP(`${W} j avant les règles`,C.pre),rowP(`${W} j après les règles`,C.post),rowP('Reste du cycle',C.aut),rowP('<b>Hors règles</b>',hors),rowP('<b>Total</b>',tot)])
    +`<p class="hint">« Par 10 j » = nombre de malaises ramené à 10 jours, pour comparer des périodes de durées différentes. Suivi calculé depuis le début de la première période de règles saisie${ps.before?` (${ps.before} malaise(s) plus ancien(s) non compté(s))`:''}.</p>`)}
 
@@ -357,7 +357,7 @@ function renderStats(){const A=analyse(),W=A.W;let h=settingsCard();
  if(!vs)h+=card('Valium et malaises','<p class="empty">Aucune prise de Valium enregistrée.</p>');
  else{const rt=(n,d)=>d>0?f1(n/d*10):'—',row=(l,o,hr)=>{const d=hr/24;return tr([l,f1(d),o.t,rt(o.t,d),`${o.c} (${rt(o.c,d)})`,`${o.i} (${rt(o.i,d)})`,`${o.g} (${rt(o.g,d)})`,`${o.q} (${rt(o.q,d)})`])},
    tot={t:vs.inP.t+vs.outM.t,c:vs.inP.c+vs.outM.c,i:vs.inP.i+vs.outM.i,g:vs.inP.g+vs.outM.g,q:vs.qi+vs.qo};
-  h+=card('Valium et malaises',tb(['Période','Jours','Malaises','Par 10 j','Conscients (par 10 j)','Inconscients (par 10 j)','Généralisées (par 10 j)','Montés (par 10 j)'],[row(`${A.H} h après une prise`,vs.inP,vs.cov),row('Hors de ces périodes',vs.outM,vs.out),row('<b>Total</b>',tot,vs.cov+vs.out)])
+  h+=card('Valium et malaises',tb(['Période','Jours','Malaises','Par 10 j','Conscients (par 10 j)','Inconscients (par 10 j)','Généralisées (par 10 j)','Montées (par 10 j)'],[row(`${A.H} h après une prise`,vs.inP,vs.cov),row('Hors de ces périodes',vs.outM,vs.out),row('<b>Total</b>',tot,vs.cov+vs.out)])
    +`<p class="hint">${vs.n} prise(s) depuis le ${fr(dstr(vs.first))} (comparaison calculée à partir de ce jour). ${vs.fol} malaise(s) sur ${vs.seen} ont été suivis d’une prise dans les ${A.H} h. Une prise peut aussi être une réaction à un malaise ou à ses signes avant-coureurs : à interpréter avec prudence.</p>`)}
  const es=evStats(A);
  h+=card('Corrélation avec les évènements',es.length?tb(['Évènement','Fois','Jours couverts','Malaises','Par 10 j','Hors évènement (par 10 j)'],es.map(x=>tr([esc(x.lib),x.fois,x.d,x.t,f1(x.r),f1(x.ro)])))
@@ -390,7 +390,7 @@ function bands(A,X,top,h){return A.R.filter(r=>r.e>=A.x0&&r.d<A.x1).map(r=>{cons
  return `<rect class="rg" x="${a}" y="${top}" width="${Math.max(2,b-a)}" height="${h}"><title>Règles ${fr(dstr(r.d))} → ${r.open?'en cours':fr(dstr(r.e))}</title></rect>`}).join('')}
 function chTimeline(A,w){const L=84,R=10,top=8,x0=A.x0,x1=A.x1,X=n=>L+(n-x0)/(x1-x0)*(w-L-R),yC=top+48+20,yI=yC+36,yG=yI+34,yM=yG+30,yV=yM+30,bot=yV+22,H=bot+26;
  let s=`<clipPath id="cpT"><rect x="${L}" y="0" width="${w-L-R}" height="${H}"/></clipPath>`+bands(A,X,top,bot-top)+grid(x0,x1,X,top,bot);
- s+=`<text class="tx" x="4" y="${top+12}">Évènements</text><text class="tx" x="4" y="${yC+4}">Conscients</text><text class="tx" x="4" y="${yI+4}">Inconscients</text><text class="tx" x="4" y="${yG+4}">Généralisées</text><text class="tx" x="4" y="${yM+4}">Montés</text><text class="tx" x="4" y="${yV+4}">Valium</text><g clip-path="url(#cpT)">`;
+ s+=`<text class="tx" x="4" y="${top+12}">Évènements</text><text class="tx" x="4" y="${yC+4}">Conscients</text><text class="tx" x="4" y="${yI+4}">Inconscients</text><text class="tx" x="4" y="${yG+4}">Généralisées</text><text class="tx" x="4" y="${yM+4}">Montées</text><text class="tx" x="4" y="${yV+4}">Valium</text><g clip-path="url(#cpT)">`;
  A.E.forEach((e,i)=>{if(e.f<x0||e.s>=x1)return;const y=top+(i%3)*16,xs=X(Math.max(e.s,x0)),xe=X(Math.min(e.f+1,x1)),rg=e.f>e.s,
    t=`${e.lib} (${fr(dstr(e.s))}${rg?' → '+fr(dstr(e.f)):''})`,lab=esc(e.lib.length>16?e.lib.slice(0,15)+'…':e.lib);
   s+=rg?`<rect class="ev" x="${xs}" y="${y+2}" width="${Math.max(3,xe-xs)}" height="8" rx="3"><title>${esc(t)}</title></rect>`:`<path class="ev" d="M${X(e.s+.5)} ${y+1}l5 5l-5 5l-5-5z"><title>${esc(t)}</title></path>`;
@@ -399,7 +399,7 @@ function chTimeline(A,w){const L=84,R=10,top=8,x0=A.x0,x1=A.x1,X=n=>L+(n-x0)/(x1
  const cnt={};
  A.M.forEach(m=>{if(m.n<x0||m.n>=x1)return;const k=m.n+'|'+m.ty,c=cnt[k]=(cnt[k]||0)+1,cy=({conscient:yC,generalisee:yG}[m.ty]||yI)-(c-1)*7;
   s+=`<circle class="${({conscient:'c1',generalisee:'c3'}[m.ty]||'c2')} pt" cx="${X(m.n+.5)}" cy="${cy}" r="5"><title>${fr(m.t)} · ${esc(TYL[m.ty]||'')}${m.g&&m.du>0?' · '+fmtDur(m.du):''}${m.s.length?' · '+esc(m.s.join(', ')):''}</title></circle>`});
- A.MT.forEach(p=>{if(p.n<x0||p.n>=x1)return;s+=`<circle class="mt pt" cx="${X(p.n+.5)}" cy="${yM}" r="4"><title>${fr(p.t)} · Monté${p.s.length?' · '+esc(p.s.join(', ')):''}</title></circle>`});
+ A.MT.forEach(p=>{if(p.n<x0||p.n>=x1)return;s+=`<circle class="mt pt" cx="${X(p.n+.5)}" cy="${yM}" r="4"><title>${fr(p.t)} · Montée${p.s.length?' · '+esc(p.s.join(', ')):''}</title></circle>`});
  A.V.forEach(p=>{if(p.n<x0||p.n>=x1)return;const x=X(p.n+.5);s+=`<path class="vl pt" d="M${x} ${yV-6}l6 11h-12z"><title>${fr(p.t)} · Valium${p.dose!=null?' '+String(p.dose).replace('.',',')+' mg':''}</title></path>`});
  s+=`<line class="td" x1="${X(A.T+.5)}" x2="${X(A.T+.5)}" y1="${top}" y2="${bot}"/></g>`;
  return svgW(w,H,s)}
@@ -459,7 +459,7 @@ function renderGraph(){const A=analyse(),el=$('#v-graph');
  if(!A.M.length&&!A.R.length){el.innerHTML='<p class="empty">Pas encore de données.</p>';return}
  const w=Math.max(el.clientWidth-26,560),x0=rng==='all'?Math.min(A.first,A.T-29):A.T-Math.round(+rng*30.4),B={...A,x0,x1:A.T+1};
  let h=`<div class="chips">${[['3','3 mois'],['6','6 mois'],['12','1 an'],['all','Tout']].map(([v,l])=>`<button class="chip${rng===v?' on':''}" data-r="${v}">${l}</button>`).join('')}</div>`;
- h+=`<div class="lg"><span><i class="sw c1"></i>Conscient</span><span><i class="sw c2"></i>Inconscient</span><span><i class="sw rg"></i>Règles</span><span><i class="sw ev"></i>Évènement</span><span><i class="sw c3"></i>Crise généralisée</span><span><i class="sw mt"></i>Monté</span><span><i class="sw vl"></i>Valium</span></div>`;
+ h+=`<div class="lg"><span><i class="sw c1"></i>Conscient</span><span><i class="sw c2"></i>Inconscient</span><span><i class="sw rg"></i>Règles</span><span><i class="sw ev"></i>Évènement</span><span><i class="sw c3"></i>Crise généralisée</span><span><i class="sw mt"></i>Montée</span><span><i class="sw vl"></i>Valium</span></div>`;
  h+=card('Chronologie',`<div class="cw">${chTimeline(B,w)}</div>`)+card('Malaises par semaine',`<div class="cw">${chWeeks(B,w)}</div>`)
   +card('Malaises par mois',`<div class="cw">${chMonths(A,w)}</div>`)+card('Malaises selon le jour du cycle',`<div class="cw">${chCycle(A,w)}</div><p class="hint">Tous cycles confondus. La zone rose = durée moyenne des règles.</p>`)+distCards(A,w);
  el.innerHTML=h}
